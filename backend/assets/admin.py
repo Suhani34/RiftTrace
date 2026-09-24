@@ -1,7 +1,29 @@
 from django.contrib import admin
 
-from .models import Asset, Relationship
+from .models import (
+    Asset,
+    NetworkZone,
+    Relationship,
+)
 
+@admin.register(NetworkZone)
+class NetworkZoneAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "organization",
+        "zone_type",
+    )
+
+    list_filter = (
+        "organization",
+        "zone_type",
+    )
+
+    search_fields = (
+        "name",
+        "organization__name",
+    )
 
 @admin.register(Asset)
 class AssetAdmin(admin.ModelAdmin):
@@ -11,6 +33,10 @@ class AssetAdmin(admin.ModelAdmin):
         "organization",
         "asset_type",
         "criticality",
+	"environment",
+	"network_zone",
+	"hostname",
+	"ip_address",
         "is_internet_exposed",
     )
 
@@ -34,6 +60,9 @@ class RelationshipAdmin(admin.ModelAdmin):
         "source",
         "relationship_type",
         "target",
+	"protocol",
+	"port",
+	"requires_authentication",
     )
 
     list_filter = (

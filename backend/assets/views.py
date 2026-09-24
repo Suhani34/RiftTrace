@@ -1,18 +1,52 @@
 from rest_framework import viewsets
 
-from .models import Asset, Relationship
+from .models import (
+    Asset,
+    NetworkZone,
+    Relationship,
+)
+
 from .serializers import (
     AssetSerializer,
+    NetworkZoneSerializer,
     RelationshipSerializer,
 )
 
+class NetworkZoneViewSet(viewsets.ModelViewSet):
+    serializer_class = NetworkZoneSerializer
+
+    def get_queryset(self):
+        queryset = NetworkZone.objects.select_related(
+            "organization"
+        ).all()
+
+        organization = self.request.query_params.get(
+            "organization"
+        )
+
+        zone_type = self.request.query_params.get(
+            "zone_type"
+        )
+
+        if organization:
+            queryset = queryset.filter(
+                organization_id=organization
+            )
+
+        if zone_type:
+            queryset = queryset.filter(
+                zone_type=zone_type
+            )
+
+        return queryset
 
 class AssetViewSet(viewsets.ModelViewSet):
     serializer_class = AssetSerializer
 
     def get_queryset(self):
         queryset = Asset.objects.select_related(
-            "organization"
+            "organization",
+	    "network_zone",
         ).all()
 
         organization = self.request.query_params.get(

@@ -3,12 +3,19 @@ from rest_framework.routers import DefaultRouter
 
 from assets.views import (
     AssetViewSet,
+    NetworkZoneViewSet,
     RelationshipViewSet,
 )
 from organizations.views import OrganizationViewSet
 
 
 router = DefaultRouter()
+
+router.register(
+    "zones",
+    NetworkZoneViewSet,
+    basename="zone",
+)
 
 router.register(
     "organizations",

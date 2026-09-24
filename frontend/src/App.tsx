@@ -9,7 +9,7 @@ import AssetsPage from "./pages/AssetsPage";
 import DashboardPage from "./pages/DashboardPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
-
+import NetworkZonesPage from "./pages/NetworkZonesPage";
 
 function NotFoundPage() {
   return (
@@ -37,6 +37,11 @@ export default function App() {
         <Route
           path="organizations"
           element={<OrganizationsPage />}
+        />
+
+	<Route
+          path="zones"
+          element={<NetworkZonesPage />}
         />
 
         <Route

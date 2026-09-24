@@ -5,8 +5,11 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from organizations.models import Organization
 
-from .models import Asset, Relationship
-
+from .models import (
+    Asset,
+    NetworkZone,
+    Relationship,
+)
 
 class AssetAndRelationshipModelTests(TestCase):
     def setUp(self):
@@ -364,3 +367,77 @@ class RelationshipAPITests(APITestCase):
             len(response.data),
             1,
         )
+
+class NetworkZoneModelTests(TestCase):
+    def setUp(self):
+        self.organization = (
+            Organization.objects.create(
+                name="ZoneTestCorp"
+            )
+        )
+
+    def test_network_zone_belongs_to_organization(
+        self,
+    ):
+        zone = NetworkZone.objects.create(
+            organization=self.organization,
+            name="DMZ",
+            zone_type=NetworkZone.ZoneType.DMZ,
+        )
+
+        self.assertEqual(
+            zone.organization,
+            self.organization,
+        )
+
+    def test_asset_can_be_assigned_to_zone(
+        self,
+    ):
+        zone = NetworkZone.objects.create(
+            organization=self.organization,
+            name="Internal",
+            zone_type=(
+                NetworkZone.ZoneType.INTERNAL
+            ),
+        )
+
+        asset = Asset.objects.create(
+            organization=self.organization,
+            name="Application Server",
+            asset_type=Asset.AssetType.SERVER,
+            network_zone=zone,
+        )
+
+        self.assertEqual(
+            asset.network_zone,
+            zone,
+        )
+
+    def test_asset_rejects_zone_from_other_organization(
+        self,
+    ):
+        other_organization = (
+            Organization.objects.create(
+                name="OtherZoneCorp"
+            )
+        )
+
+        other_zone = NetworkZone.objects.create(
+            organization=other_organization,
+            name="Other Zone",
+            zone_type=(
+                NetworkZone.ZoneType.INTERNAL
+            ),
+        )
+
+        with self.assertRaises(
+            ValidationError
+        ):
+            Asset.objects.create(
+                organization=self.organization,
+                name="Invalid Server",
+                asset_type=(
+                    Asset.AssetType.SERVER
+                ),
+                network_zone=other_zone,
+            )

@@ -1,8 +1,68 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from organizations.models import Organization
 
+class NetworkZone(models.Model):
+    class ZoneType(models.TextChoices):
+        DMZ = "DMZ", "DMZ"
+        INTERNAL = "INTERNAL", "Internal"
+        RESTRICTED = "RESTRICTED", "Restricted"
+        MANAGEMENT = "MANAGEMENT", "Management"
+        CLOUD = "CLOUD", "Cloud"
+        ENDPOINT = "ENDPOINT", "Endpoint"
+        OTHER = "OTHER", "Other"
+
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="network_zones",
+    )
+
+    name = models.CharField(
+        max_length=100,
+    )
+
+    zone_type = models.CharField(
+        max_length=16,
+        choices=ZoneType.choices,
+        default=ZoneType.INTERNAL,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = [
+            "organization_id",
+            "name",
+        ]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "organization",
+                    "name",
+                ],
+                name="unique_zone_name_per_organization",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.organization.name} - "
+            f"{self.name}"
+        )
 
 class Asset(models.Model):
     class AssetType(models.TextChoices):
@@ -20,11 +80,44 @@ class Asset(models.Model):
         NETWORK_DEVICE = "NETWORK_DEVICE", "Network Device"
         OTHER = "OTHER", "Other"
 
+    class Environment(models.TextChoices):
+        PRODUCTION = "PRODUCTION", "Production"
+        STAGING = "STAGING", "Staging"
+        TEST = "TEST", "Test"
+        DEVELOPMENT = "DEVELOPMENT", "Development"
+        OTHER = "OTHER", "Other"
+
     class Criticality(models.TextChoices):
         LOW = "LOW", "Low"
         MEDIUM = "MEDIUM", "Medium"
         HIGH = "HIGH", "High"
         CRITICAL = "CRITICAL", "Critical"
+
+    network_zone = models.ForeignKey(
+        NetworkZone,
+        on_delete=models.SET_NULL,
+        related_name="assets",
+        null=True,
+        blank=True,
+    )
+
+    environment = models.CharField(
+        max_length=16,
+        choices=Environment.choices,
+        default=Environment.PRODUCTION,
+    )
+
+    hostname = models.CharField(
+        max_length=255,
+        blank=True,
+    )
+
+    ip_address = models.GenericIPAddressField(
+        protocol="both",
+        unpack_ipv4=True,
+        null=True,
+        blank=True,
+    )
 
     organization = models.ForeignKey(
         Organization,
@@ -74,6 +167,33 @@ class Asset(models.Model):
             ),
         ]
 
+    def clean(self):
+        super().clean()
+
+        if (
+            self.network_zone_id
+            and self.organization_id
+            and self.network_zone.organization_id
+            != self.organization_id
+        ):
+            raise ValidationError(
+                {
+                    "network_zone": (
+                        "The network zone must belong "
+                        "to the same organization "
+                        "as the asset."
+                    )
+                }
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+
+        return super().save(
+            *args,
+            **kwargs,
+        )
+
     def __str__(self):
         return f"{self.name} ({self.get_asset_type_display()})"
 
@@ -85,6 +205,24 @@ class Relationship(models.Model):
         WRITES = "WRITES", "Writes"
         AUTHENTICATES_TO = "AUTHENTICATES_TO", "Authenticates To"
         DEPENDS_ON = "DEPENDS_ON", "Depends On"
+
+    protocol = models.CharField(
+        max_length=32,
+        blank=True,
+    )
+
+    port = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(65535),
+        ],
+    )
+
+    requires_authentication = models.BooleanField(
+        default=False,
+    )
 
     source = models.ForeignKey(
         Asset,
@@ -134,6 +272,19 @@ class Relationship(models.Model):
                 ),
                 name="relationship_source_not_target",
             ),
+
+	    models.CheckConstraint(
+                condition=(
+                    models.Q(port__isnull=True)
+                    | (
+                        models.Q(port__gte=1)
+                        & models.Q(port__lte=65535)
+                    )
+                ),
+                name="relationship_valid_port",
+            ),
+
+
         ]
 
     def clean(self):

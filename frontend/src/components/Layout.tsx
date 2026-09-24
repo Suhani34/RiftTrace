@@ -22,6 +22,10 @@ export default function Layout() {
           Dashboard
         </NavLink>
 
+        <NavLink to="/zones">
+          Network Zones
+        </NavLink>
+
         <NavLink to="/organizations">
           Organizations
         </NavLink>

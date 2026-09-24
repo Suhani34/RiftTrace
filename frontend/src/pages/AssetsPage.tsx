@@ -14,10 +14,16 @@ import {
   listOrganizations,
 } from "../api/organizations";
 
+import {
+  listZones,
+} from "../api/zones";
+
 import type {
   Asset,
   AssetType,
   Criticality,
+  Environment,
+  NetworkZone,
   Organization,
 } from "../types/models";
 
@@ -55,6 +61,31 @@ const CRITICALITIES: Criticality[] = [
   "CRITICAL",
 ];
 
+const ENVIRONMENTS: Array<{
+  value: Environment;
+  label: string;
+}> = [
+  {
+    value: "PRODUCTION",
+    label: "Production",
+  },
+  {
+    value: "STAGING",
+    label: "Staging",
+  },
+  {
+    value: "TEST",
+    label: "Test",
+  },
+  {
+    value: "DEVELOPMENT",
+    label: "Development",
+  },
+  {
+    value: "OTHER",
+    label: "Other",
+  },
+];
 
 export default function AssetsPage() {
   const [
@@ -102,6 +133,32 @@ export default function AssetsPage() {
     setError,
   ] = useState("");
 
+  const [
+    zones,
+    setZones,
+  ] = useState<NetworkZone[]>([]);
+
+  const [
+    selectedZone,
+    setSelectedZone,
+  ] = useState("");
+
+  const [
+    environment,
+    setEnvironment,
+  ] = useState<Environment>(
+    "PRODUCTION",
+  );
+
+  const [
+    hostname,
+    setHostname,
+  ] = useState("");
+
+  const [
+    ipAddress,
+    setIpAddress,
+  ] = useState("");
 
   const loadAssets = useCallback(
     async (organizationId?: number) => {
@@ -142,6 +199,14 @@ export default function AssetsPage() {
           await loadAssets(
             orgData[0].id,
           );
+
+	  const zoneData =
+  	    await listZones(
+    	    orgData[0].id,
+  	  );
+
+          setZones(zoneData);
+
         }
       } catch {
         setError(
@@ -158,6 +223,14 @@ export default function AssetsPage() {
     value: string,
   ) {
     setSelectedOrganization(value);
+
+    const zoneData =
+      await listZones(
+        Number(value),
+    );
+
+    setZones(zoneData);
+    setSelectedZone("");
 
     if (value) {
       await loadAssets(
@@ -203,6 +276,20 @@ export default function AssetsPage() {
 
         criticality,
 
+	environment,
+
+	network_zone:
+	  selectedZone
+	    ? Number(selectedZone)
+	    : null,
+
+	hostname: hostname.trim(),
+
+	ip_address:
+	  ipAddress.trim()
+	    ? ipAddress.trim()
+	    : null,
+
         description:
           description.trim(),
 
@@ -212,6 +299,8 @@ export default function AssetsPage() {
 
       setName("");
       setDescription("");
+      setHostname("");
+      setIpAddress("");
       setInternetExposed(false);
 
       await loadAssets(
@@ -228,8 +317,9 @@ export default function AssetsPage() {
 
 
   async function handleDelete(
-    asset: Asset,
-  ) {
+    asset: Asset, 
+  ) 
+  {
     const confirmed = window.confirm(
       `Delete ${asset.name}?`,
     );
@@ -321,6 +411,84 @@ export default function AssetsPage() {
               placeholder="VPN Gateway"
             />
           </label>
+
+	  <label>
+	    Environment
+
+	    <select
+	      value={environment}
+	      onChange={(event) =>
+	        setEnvironment(
+	          event.target.value as Environment,
+	        )
+	      }
+	    >
+	      {ENVIRONMENTS.map(
+	        (item) => (
+	          <option
+	            key={item.value}
+	            value={item.value}
+	          >
+	            {item.label}
+	          </option>
+	        ),
+	      )}
+	    </select>
+	  </label>
+
+	  <label>
+	    Network Zone
+
+	    <select
+	      value={selectedZone}
+	      onChange={(event) =>
+	        setSelectedZone(
+	          event.target.value,
+	        )
+	      }
+	    >
+	      <option value="">
+	        No zone
+	      </option>
+
+	      {zones.map((zone) => (
+	        <option
+	          key={zone.id}
+	          value={zone.id}
+	        >
+	          {zone.name}
+	        </option>
+	      ))}
+	    </select>
+	  </label>
+
+	  <label>
+	    Hostname
+
+	    <input
+	      value={hostname}
+	      onChange={(event) =>
+	        setHostname(
+	          event.target.value,
+	        )
+	      }
+	      placeholder="web01.example.local"
+	    />
+	  </label>
+
+	  <label>
+	    IP Address
+
+	    <input
+	      value={ipAddress}
+	      onChange={(event) =>
+	        setIpAddress(
+	          event.target.value,
+	        )
+	      }
+	      placeholder="10.10.10.10"
+	    />
+	  </label>
 
           <label>
             Asset Type
@@ -431,6 +599,31 @@ export default function AssetsPage() {
                       >
                         {asset.criticality_display}
                       </span>
+
+		    <p>
+		      Environment:
+		      {" "}
+		      {asset.environment_display}
+		    </p>
+
+		    <p>
+		      Zone:
+		      {" "}
+		      {asset.network_zone_name ?? "Unassigned"}
+		    </p>
+
+		    {asset.hostname && (
+		      <p>
+		        Hostname: {asset.hostname}
+		      </p>
+		    )}
+
+		    {asset.ip_address && (
+		      <p>
+		        IP: {asset.ip_address}
+		      </p>
+		    )}
+
                     </div>
 
                     <p>

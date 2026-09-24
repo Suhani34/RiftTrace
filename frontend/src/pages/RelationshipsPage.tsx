@@ -74,6 +74,21 @@ export default function RelationshipsPage() {
   ] = useState<Relationship[]>([]);
 
   const [
+    protocol,
+    setProtocol,
+  ] = useState("");
+
+  const [
+    port,
+    setPort,
+  ] = useState("");
+
+  const [
+    requiresAuthentication,
+    setRequiresAuthentication,
+  ] = useState(false);
+
+  const [
     selectedOrganization,
     setSelectedOrganization,
   ] = useState("");
@@ -206,12 +221,24 @@ useEffect(() => {
         target: Number(target),
         relationship_type:
           relationshipType,
+	protocol: protocol.trim(),
+
+	port:
+	  port.trim()
+	    ? Number(port)
+	    : null,
+
+	requires_authentication:
+	  requiresAuthentication,
         description:
           description.trim(),
       });
 
       setSource("");
       setTarget("");
+      setProtocol("");
+      setPort("");
+      setRequiresAuthentication(false);
       setDescription("");
 
       const data =
@@ -367,6 +394,51 @@ useEffect(() => {
             </select>
           </label>
 
+	  <label>
+	    Protocol
+
+	    <input
+	      value={protocol}
+	      onChange={(event) =>
+	        setProtocol(
+	          event.target.value,
+	        )
+	      }
+	      placeholder="HTTPS"
+	    />
+	  </label>
+
+	  <label>
+	    Port
+
+	    <input
+	      type="number"
+	      min="1"
+	      max="65535"
+	      value={port}
+	      onChange={(event) =>
+	        setPort(
+	          event.target.value,
+	        )
+	      }
+	      placeholder="443"
+	    />
+	  </label>
+
+	  <label className="checkbox-label">
+	    <input
+	      type="checkbox"
+	      checked={requiresAuthentication}
+	      onChange={(event) =>
+	        setRequiresAuthentication(
+	          event.target.checked,
+	        )
+	      }
+	    />
+
+	    Requires authentication
+	  </label>
+
           <label>
             Target Asset
 
@@ -468,6 +540,25 @@ useEffect(() => {
                   >
                     Delete
                   </button>
+
+		  <p>
+		    Protocol:
+		    {" "}
+		    {relationship.protocol || "Unspecified"}
+
+		    {relationship.port
+		      ? ` / ${relationship.port}`
+		      : ""}
+		  </p>
+
+		  <p>
+		    Authentication:
+		    {" "}
+		    {relationship.requires_authentication
+		      ? "Required"
+		      : "Not specified"}
+		  </p>
+
                 </article>
               ),
             )}
