@@ -22,12 +22,12 @@ export default function Layout() {
           Dashboard
         </NavLink>
 
-        <NavLink to="/zones">
-          Network Zones
-        </NavLink>
-
         <NavLink to="/organizations">
           Organizations
+        </NavLink>
+
+        <NavLink to="/zones">
+          Network Zones
         </NavLink>
 
         <NavLink to="/assets">
@@ -37,6 +37,11 @@ export default function Layout() {
         <NavLink to="/relationships">
           Relationships
         </NavLink>
+
+        <NavLink to="/topology">
+          Topology
+        </NavLink>
+
       </nav>
 
       <main className="page-container">

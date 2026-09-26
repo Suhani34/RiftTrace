@@ -9,6 +9,7 @@ import AssetsPage from "./pages/AssetsPage";
 import DashboardPage from "./pages/DashboardPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
+import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
 
 function NotFoundPage() {
@@ -53,6 +54,11 @@ export default function App() {
           path="relationships"
           element={<RelationshipsPage />}
         />
+
+	<Route
+	  path="topology"
+	  element={<TopologyPage />}
+	/>
 
         <Route
           path="*"

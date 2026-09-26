@@ -416,3 +416,564 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+.topology-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+
+  margin-bottom: 18px;
+  padding: 18px 20px;
+
+  background: white;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+
+.topology-toolbar > label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  min-width: 240px;
+
+  color: #475569;
+  font-weight: 600;
+}
+
+
+.topology-stats {
+  display: flex;
+  gap: 12px;
+}
+
+
+.topology-stat {
+  min-width: 100px;
+
+  padding: 10px 14px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+
+.topology-stat span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #64748b;
+  font-size: 12px;
+}
+
+
+.topology-stat strong {
+  font-size: 20px;
+}
+
+
+.graph-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+
+  margin-bottom: 18px;
+  padding: 12px 16px;
+
+  background: white;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+
+.legend-items span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #475569;
+  font-size: 13px;
+}
+
+
+.legend-dot {
+  display: inline-block;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+}
+
+
+.legend-low {
+  background: #16a34a;
+}
+
+
+.legend-medium {
+  background: #ca8a04;
+}
+
+
+.legend-high {
+  background: #ea580c;
+}
+
+
+.legend-critical {
+  background: #dc2626;
+}
+
+
+.graph-legend p {
+  margin: 0 0 0 auto;
+
+  color: #64748b;
+  font-size: 12px;
+}
+
+
+.topology-workspace {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    300px;
+
+  gap: 18px;
+
+  align-items: stretch;
+}
+
+
+.topology-canvas-card {
+  overflow: hidden;
+
+  min-width: 0;
+
+  background: white;
+
+  border: 1px solid #dbe1e8;
+  border-radius: 14px;
+}
+
+
+.topology-canvas {
+  width: 100%;
+  height: 720px;
+}
+
+
+.graph-message {
+  display: grid;
+  place-items: center;
+
+  height: 720px;
+
+  color: #64748b;
+}
+
+
+.graph-details-panel {
+  min-height: 720px;
+
+  padding: 20px;
+
+  background: white;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+
+.details-heading {
+  margin-bottom: 20px;
+}
+
+
+.details-heading h3 {
+  margin: 4px 0 0;
+}
+
+
+.details-eyebrow {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+.details-list {
+  margin: 0;
+}
+
+
+.details-list > div {
+  padding: 11px 0;
+
+  border-bottom: 1px solid #eef2f7;
+}
+
+
+.details-list dt {
+  margin-bottom: 4px;
+
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.details-list dd {
+  margin: 0;
+
+  overflow-wrap: anywhere;
+
+  color: #1e293b;
+}
+
+
+.details-empty {
+  color: #64748b;
+}
+
+
+.details-empty h3 {
+  margin-top: 0;
+
+  color: #1e293b;
+}
+
+
+.react-flow__node-group.zone-group {
+  padding: 14px;
+
+  background: rgba(
+    248,
+    250,
+    252,
+    0.78
+  );
+
+  color: #334155;
+
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 16px;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  text-align: left;
+}
+
+
+.react-flow__node-group.zone-type-dmz {
+  background: rgba(
+    254,
+    242,
+    242,
+    0.72
+  );
+
+  border-color: #fca5a5;
+}
+
+
+.react-flow__node-group.zone-type-internal {
+  background: rgba(
+    239,
+    246,
+    255,
+    0.72
+  );
+
+  border-color: #93c5fd;
+}
+
+
+.react-flow__node-group.zone-type-restricted {
+  background: rgba(
+    250,
+    245,
+    255,
+    0.72
+  );
+
+  border-color: #d8b4fe;
+}
+
+
+.react-flow__node-group.zone-type-management {
+  background: rgba(
+    240,
+    253,
+    244,
+    0.72
+  );
+
+  border-color: #86efac;
+}
+
+
+.react-flow__node-group.zone-type-cloud {
+  background: rgba(
+    236,
+    254,
+    255,
+    0.72
+  );
+
+  border-color: #67e8f9;
+}
+
+
+.react-flow__node-group.zone-type-endpoint {
+  background: rgba(
+    255,
+    251,
+    235,
+    0.72
+  );
+
+  border-color: #fcd34d;
+}
+
+
+.react-flow__node-group.zone-type-other,
+.react-flow__node-group.zone-type-unassigned {
+  background: rgba(
+    248,
+    250,
+    252,
+    0.82
+  );
+
+  border-color: #cbd5e1;
+}
+
+.asset-graph-node {
+  position: relative;
+
+  width: 260px;
+
+  padding: 14px;
+
+  background: white;
+
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+
+  box-shadow:
+    0 4px 12px
+    rgba(15, 23, 42, 0.08);
+
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+
+.asset-graph-node:hover {
+  box-shadow:
+    0 8px 20px
+    rgba(15, 23, 42, 0.12);
+}
+
+
+.asset-graph-node-selected {
+  box-shadow:
+    0 0 0 3px
+    rgba(37, 99, 235, 0.18),
+    0 8px 20px
+    rgba(15, 23, 42, 0.12);
+}
+
+
+.graph-criticality-low {
+  border-left-color: #16a34a;
+}
+
+
+.graph-criticality-medium {
+  border-left-color: #ca8a04;
+}
+
+
+.graph-criticality-high {
+  border-left-color: #ea580c;
+}
+
+
+.graph-criticality-critical {
+  border-left-color: #dc2626;
+}
+
+
+.asset-node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+
+.asset-node-header strong {
+  line-height: 1.25;
+}
+
+
+.asset-node-type {
+  margin-top: 7px;
+
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.asset-node-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 9px;
+}
+
+
+.asset-node-meta span {
+  padding: 3px 6px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  border-radius: 6px;
+
+  font-size: 10px;
+}
+
+
+.asset-node-address {
+  margin-top: 8px;
+
+  color: #64748b;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-size: 11px;
+}
+
+
+.asset-node-exposed {
+  width: fit-content;
+
+  margin-top: 8px;
+  padding: 3px 6px;
+
+  background: #fff7ed;
+  color: #c2410c;
+
+  border-radius: 6px;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+.asset-node-handle {
+  width: 9px !important;
+  height: 9px !important;
+
+  background: #475569 !important;
+
+  border: 2px solid white !important;
+}
+
+.react-flow__edge-path {
+  stroke: #64748b;
+}
+
+
+.react-flow__edge.selected
+.react-flow__edge-path {
+  stroke: #2563eb;
+  stroke-width: 3;
+}
+
+
+.react-flow__controls {
+  overflow: hidden;
+
+  border:
+    1px solid #dbe1e8;
+  border-radius: 8px;
+
+  box-shadow:
+    0 4px 12px
+    rgba(15, 23, 42, 0.08);
+}
+
+
+.react-flow__minimap {
+  overflow: hidden;
+
+  border:
+    1px solid #dbe1e8;
+  border-radius: 8px;
+}
+
+
+@media (max-width: 1000px) {
+  .topology-workspace {
+    grid-template-columns: 1fr;
+  }
+
+
+  .graph-details-panel {
+    min-height: auto;
+  }
+
+
+  .topology-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+
+  .topology-stats {
+    flex-wrap: wrap;
+  }
+
+
+  .graph-legend p {
+    width: 100%;
+    margin-left: 0;
+  }
+}
