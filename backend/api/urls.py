@@ -39,4 +39,5 @@ router.register(
 urlpatterns = [
     path("", include("core.urls")),
     path("", include(router.urls)),
+    path("simulations/", include("simulations.urls")),
 ]

@@ -27,6 +27,8 @@ export default function AssetNode({
       className={[
         "asset-graph-node",
         criticalityClass,
+
+	`simulation-${data.simulationState}`,
         selected
           ? "asset-graph-node-selected"
           : "",

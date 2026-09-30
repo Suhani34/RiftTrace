@@ -194,6 +194,8 @@ export function buildTopologyGraph(
 
           data: {
             asset,
+	    simulationState:
+	      "normal",
           },
 
           style: {

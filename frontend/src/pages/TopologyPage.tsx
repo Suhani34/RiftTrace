@@ -22,6 +22,21 @@ import {
 } from "../api/organizations";
 
 import {
+  runReachabilitySimulation,
+} from "../api/simulations";
+
+import ReachabilitySimulationPanel
+  from "../components/graph/ReachabilitySimulationPanel";
+
+import {
+  applyReachabilityHighlight,
+} from "../graph/applyReachabilityHighlight";
+
+import type {
+  ReachabilitySimulationResult,
+} from "../types/simulation";
+
+import {
   getOrganizationTopology,
 } from "../api/topology";
 
@@ -96,6 +111,31 @@ export default function TopologyPage() {
     setError,
   ] = useState("");
 
+  const [
+    simulationStartAssetId,
+    setSimulationStartAssetId,
+  ] = useState("");
+
+
+  const [
+    simulationResult,
+    setSimulationResult,
+  ] = useState<
+    ReachabilitySimulationResult
+    | null
+  >(null);
+
+
+  const [
+    simulationRunning,
+    setSimulationRunning,
+  ] = useState(false);
+
+
+  const [
+    simulationError,
+    setSimulationError,
+  ] = useState("");
 
   const [
     nodes,
@@ -214,6 +254,12 @@ export default function TopologyPage() {
   ) {
     setSelectedOrganization(value);
 
+    setSimulationStartAssetId("");
+
+    setSimulationResult(null);
+  
+    setSimulationError("");
+
     setSelectedAsset(null);
 
     setSelectedRelationship(null);
@@ -269,6 +315,89 @@ export default function TopologyPage() {
     }
   }
 
+  async function handleRunSimulation() {
+    if (
+      !selectedOrganization
+      || !simulationStartAssetId
+    ) {
+      setSimulationError(
+        "Select a starting asset first.",
+      );
+
+      return;
+    }
+
+
+    try {
+      setSimulationRunning(true);
+
+      setSimulationError("");
+
+
+      const result =
+        await runReachabilitySimulation(
+          Number(
+            selectedOrganization
+          ),
+
+          Number(
+            simulationStartAssetId
+          ),
+        );
+
+
+      setSimulationResult(
+        result
+      );
+
+
+      const highlighted =
+        applyReachabilityHighlight(
+          nodes,
+          edges,
+          result,
+        );
+
+ 
+      setNodes(
+        highlighted.nodes
+      );
+
+      setEdges(
+        highlighted.edges
+      );
+    } catch {
+      setSimulationError(
+        "Unable to run the "
+        + "reachability simulation.",
+      );
+    } finally {
+      setSimulationRunning(false);
+    }
+  }
+
+  function handleClearSimulation() {
+    setSimulationResult(null);
+
+    setSimulationError("");
+
+
+    const cleared =
+      applyReachabilityHighlight(
+        nodes,
+        edges,
+        null,
+      );
+
+
+    setNodes(
+      cleared.nodes
+    );
+
+    setEdges(
+      cleared.edges
+    );
+  }
 
   const handleNodeClick:
     NodeMouseHandler<TopologyNode> =
@@ -395,6 +524,44 @@ export default function TopologyPage() {
         )}
       </section>
 
+      <ReachabilitySimulationPanel
+	  assets={
+	    topology?.nodes ?? []
+	  }
+
+	  selectedStartAssetId={
+	    simulationStartAssetId
+	  }
+
+	  running={
+	    simulationRunning
+	  }
+
+	  error={
+	    simulationError
+	  }
+
+	  result={
+	    simulationResult
+	  }
+
+	  onStartAssetChange={
+	    setSimulationStartAssetId
+	  }
+
+	  onRun={
+	    () => {
+	      void handleRunSimulation();
+	    }
+	  }
+
+	  onClear={
+	    handleClearSimulation
+	  }
+	/>
+
+
+	<GraphLegend />
 
       <GraphLegend />
 

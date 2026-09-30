@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'organizations.apps.OrganizationsConfig',
     'assets.apps.AssetsConfig',
-
+    'simulations.apps.SimulationsConfig',
 ]
 
 MIDDLEWARE = [
