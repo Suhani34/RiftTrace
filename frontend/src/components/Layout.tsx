@@ -38,6 +38,10 @@ export default function Layout() {
           Relationships
         </NavLink>
 
+	<NavLink to="/vulnerabilities">
+	  Vulnerabilities
+	</NavLink>
+
         <NavLink to="/topology">
           Topology
         </NavLink>

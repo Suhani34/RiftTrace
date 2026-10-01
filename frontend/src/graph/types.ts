@@ -13,6 +13,8 @@ export type SimulationNodeState =
   | "normal"
   | "start"
   | "reachable"
+  | "compromised-low"
+  | "compromised-high"
   | "dimmed";
 
 

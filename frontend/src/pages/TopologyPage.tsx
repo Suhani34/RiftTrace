@@ -22,8 +22,20 @@ import {
 } from "../api/organizations";
 
 import {
+  runAttackPropagation,
   runReachabilitySimulation,
 } from "../api/simulations";
+
+import AttackPropagationPanel
+  from "../components/graph/AttackPropagationPanel";
+
+import {
+  applyAttackPropagationHighlight,
+} from "../graph/applyAttackPropagationHighlight";
+
+import type {
+  AttackPropagationResult,
+} from "../types/attackSimulation";
 
 import ReachabilitySimulationPanel
   from "../components/graph/ReachabilitySimulationPanel";
@@ -80,6 +92,37 @@ export default function TopologyPage() {
   const [
     selectedOrganization,
     setSelectedOrganization,
+  ] = useState("");
+
+  const [
+    attackStartAssetId,
+    setAttackStartAssetId,
+  ] = useState("");
+
+  const [
+    attackStartPrivilege,
+    setAttackStartPrivilege,
+  ] = useState<
+    "LOW"
+    | "HIGH"
+  >("LOW");
+
+  const [
+    attackResult,
+    setAttackResult,
+  ] = useState<
+    AttackPropagationResult
+    | null
+  >(null);
+
+  const [
+    attackRunning,
+    setAttackRunning,
+  ] = useState(false);
+
+  const [
+    attackError,
+    setAttackError,
   ] = useState("");
 
   const [
@@ -254,6 +297,12 @@ export default function TopologyPage() {
   ) {
     setSelectedOrganization(value);
 
+    setAttackStartAssetId("");
+
+    setAttackResult(null);
+
+    setAttackError("");
+
     setSimulationStartAssetId("");
 
     setSimulationResult(null);
@@ -389,6 +438,87 @@ export default function TopologyPage() {
         null,
       );
 
+
+    setNodes(
+      cleared.nodes
+    );
+
+    setEdges(
+      cleared.edges
+    );
+  }
+
+  async function handleRunAttackPropagation() {
+    if (
+      !selectedOrganization
+      || !attackStartAssetId
+    ) {
+      setAttackError(
+        "Select a starting asset.",
+      );
+
+      return;
+    }
+
+    try {
+      setAttackRunning(true);
+
+      setAttackError("");
+
+      setSimulationResult(null);
+
+      const result =
+        await runAttackPropagation(
+          Number(
+            selectedOrganization
+          ),
+
+          Number(
+            attackStartAssetId
+          ),
+
+          attackStartPrivilege,
+        );
+
+      setAttackResult(
+        result
+      );
+
+      const highlighted =
+        applyAttackPropagationHighlight(
+          nodes,
+          edges,
+          result,
+        );
+
+      setNodes(
+        highlighted.nodes
+      );
+
+      setEdges(
+        highlighted.edges
+      );
+    } catch {
+      setAttackError(
+        "Unable to run security-aware "
+        + "propagation.",
+      );
+    } finally {
+      setAttackRunning(false);
+    }
+  }
+
+  function handleClearAttackPropagation() {
+    setAttackResult(null);
+
+    setAttackError("");
+
+    const cleared =
+      applyAttackPropagationHighlight(
+        nodes,
+        edges,
+        null,
+      );
 
     setNodes(
       cleared.nodes
@@ -560,6 +690,50 @@ export default function TopologyPage() {
 	  }
 	/>
 
+	<AttackPropagationPanel
+	  assets={
+	    topology?.nodes ?? []
+	  }
+
+	  selectedStartAssetId={
+	    attackStartAssetId
+	  }
+
+	  startPrivilege={
+	    attackStartPrivilege
+	  }
+
+	  running={
+	    attackRunning
+	  }
+
+	  error={
+	    attackError
+	  }
+
+	  result={
+	    attackResult
+	  }
+
+	  onStartAssetChange={
+	    setAttackStartAssetId
+	  }
+
+	  onStartPrivilegeChange={
+	    setAttackStartPrivilege
+	  }
+
+	  onRun={() => {
+	    void handleRunAttackPropagation();
+	  }}
+
+	  onClear={
+	    handleClearAttackPropagation
+	  }
+	/>
+
+
+	<GraphLegend />
 
 	<GraphLegend />
 

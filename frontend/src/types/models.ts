@@ -6,6 +6,11 @@ export interface Organization {
   updated_at: string;
 }
 
+export type RequiredSourcePrivilege =
+  | "NONE"
+  | "LOW"
+  | "HIGH";
+
 export type ZoneType =
   | "DMZ"
   | "INTERNAL"
@@ -103,6 +108,10 @@ export interface Relationship {
   port: number | null;
   requires_authentication: boolean;
   target_name: string;
+  required_source_privilege:
+    RequiredSourcePrivilege;
+  required_source_privilege_display:
+    string;
   relationship_type: RelationshipType;
   relationship_type_display: string;
   description: string;
@@ -133,6 +142,8 @@ export interface CreateRelationshipInput {
   relationship_type: RelationshipType;
   protocol: string;
   port: number | null;
+  required_source_privilege:
+    RequiredSourcePrivilege;
   requires_authentication: boolean;
   description: string;
 }

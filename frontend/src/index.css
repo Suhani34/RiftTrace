@@ -1206,3 +1206,108 @@ button:disabled {
     flex-wrap: wrap;
   }
 }
+
+.vulnerability-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(260px, 1fr)
+    );
+
+  gap: 14px;
+}
+
+.vulnerability-card {
+  padding: 16px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.vulnerability-card > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vulnerability-card > div span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.attack-panel {
+  border-left:
+    4px solid #dc2626;
+}
+
+.asset-graph-node.simulation-compromised-low {
+  border-color: #f97316;
+
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(
+      249,
+      115,
+      22,
+      0.18
+    );
+}
+
+.asset-graph-node.simulation-compromised-high {
+  border-color: #dc2626;
+
+  box-shadow:
+    0
+    0
+    0
+    4px
+    rgba(
+      220,
+      38,
+      38,
+      0.2
+    );
+}
+
+.blocked-transitions {
+  margin-top: 20px;
+}
+
+.blocked-transition-card {
+  margin-bottom: 10px;
+  padding: 12px 14px;
+
+  background: #fff7ed;
+
+  border:
+    1px solid #fed7aa;
+  border-radius: 9px;
+}
+
+.blocked-transition-card span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #c2410c;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.blocked-transition-card p {
+  margin:
+    7px
+    0
+    0;
+
+  color: #7c2d12;
+  font-size: 13px;
+}

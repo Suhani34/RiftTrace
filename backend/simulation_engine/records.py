@@ -34,3 +34,26 @@ class RelationshipRecord:
     port: int | None
 
     requires_authentication: bool
+    required_source_privilege: str
+
+@dataclass(
+    frozen=True,
+    slots=True,
+)
+class VulnerabilityRecord:
+    id: int
+
+    asset_id: int
+
+    title: str
+    reference_id: str
+
+    attack_vector: str
+
+    privileges_required: str
+
+    grants_privilege: str
+
+    bypasses_authentication: bool
+
+    is_exploitable: bool

@@ -169,6 +169,15 @@ class RelationshipSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    required_source_privilege_display = (
+        serializers.CharField(
+            source=(
+                "get_required_source_privilege_display"
+            ),
+            read_only=True,
+        )
+     )
+
     relationship_type_display = serializers.CharField(
         source="get_relationship_type_display",
         read_only=True,
@@ -189,6 +198,8 @@ class RelationshipSerializer(serializers.ModelSerializer):
 	    "protocol",
 	    "port",
 	    "requires_authentication",
+ 	    "required_source_privilege",
+	    "required_source_privilege_display",
             "description",
             "created_at",
         )

@@ -11,6 +11,10 @@ from organizations.models import (
     Organization,
 )
 
+from security.models import (
+    Vulnerability,
+)
+
 from simulation_engine.graph_builder import (
     build_topology_graph,
 )
@@ -18,6 +22,7 @@ from simulation_engine.graph_builder import (
 from simulation_engine.records import (
     AssetRecord,
     RelationshipRecord,
+    VulnerabilityRecord,
 )
 
 
@@ -37,6 +42,15 @@ class OrganizationGraphContext:
         Relationship,
     ]
 
+    vulnerabilities_by_id: dict[
+        int,
+        Vulnerability,
+    ]
+
+    vulnerability_records: tuple[
+        VulnerabilityRecord,
+        ...,
+    ]
 
 def load_organization_graph(
     organization: Organization,
@@ -61,6 +75,13 @@ def load_organization_graph(
         )
     )
 
+    vulnerabilities = list(
+        Vulnerability.objects.filter(
+            asset__organization=organization,
+        ).select_related(
+            "asset",
+        )
+    )
 
     asset_records = [
         AssetRecord(
@@ -106,6 +127,11 @@ def load_organization_graph(
                 relationship.target_id
             ),
 
+	    required_source_privilege=(
+	        relationship
+	        .required_source_privilege
+	    ),
+
             relationship_type=(
                 relationship
                 .relationship_type
@@ -129,6 +155,50 @@ def load_organization_graph(
         in relationships
     ]
 
+    vulnerability_records = [
+        VulnerabilityRecord(
+            id=vulnerability.id,
+
+            asset_id=(
+                vulnerability.asset_id
+            ),
+
+            title=(
+                vulnerability.title
+            ),
+
+            reference_id=(
+                vulnerability.reference_id
+            ),
+
+            attack_vector=(
+                vulnerability.attack_vector
+            ),
+
+            privileges_required=(
+                vulnerability
+               .privileges_required
+            ),
+
+            grants_privilege=(
+                vulnerability
+                .grants_privilege
+            ),
+
+            bypasses_authentication=(
+                vulnerability
+                .bypasses_authentication
+            ),
+
+            is_exploitable=(
+                vulnerability
+                .is_exploitable
+            ),
+        )
+
+        for vulnerability
+        in vulnerabilities
+    ]
 
     graph = build_topology_graph(
         assets=asset_records,
@@ -145,6 +215,18 @@ def load_organization_graph(
             asset.id: asset
             for asset in assets
         },
+
+	vulnerabilities_by_id={
+	    vulnerability.id:
+	        vulnerability
+
+	    for vulnerability
+	    in vulnerabilities
+	},
+
+	vulnerability_records=tuple(
+	    vulnerability_records
+	),
 
         relationships_by_id={
             relationship.id:

@@ -11,12 +11,21 @@ from organizations.serializers import (
     OrganizationSerializer,
 )
 
-from simulation_engine.reachability import (
-    analyze_reachability,
+from security.serializers import (
+    VulnerabilitySerializer,
+)
+
+from simulation_engine.attack_propagation import (
+    analyze_attack_propagation,
 )
 
 from .serializers import (
+    AttackPropagationRequestSerializer,
     ReachabilitySimulationRequestSerializer,
+)
+
+from simulation_engine.reachability import (
+    analyze_reachability,
 )
 
 from .services import (
@@ -188,6 +197,304 @@ class ReachabilitySimulationView(
             ),
         }
 
+
+        return Response(
+            response_data,
+            status=status.HTTP_200_OK,
+        )
+
+class AttackPropagationView(
+    APIView
+):
+    def post(self, request):
+        serializer = (
+            AttackPropagationRequestSerializer(
+                data=request.data
+            )
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        organization = (
+            serializer.validated_data[
+                "organization"
+            ]
+        )
+
+        start_asset = (
+            serializer.validated_data[
+                "start_asset"
+            ]
+        )
+
+        start_privilege = (
+            serializer.validated_data[
+                "start_privilege"
+            ]
+        )
+
+        context = (
+            load_organization_graph(
+                organization
+            )
+        )
+
+        result = (
+            analyze_attack_propagation(
+                graph=context.graph,
+
+                vulnerabilities=(
+                    context
+                    .vulnerability_records
+                ),
+
+                start_asset_id=(
+                    start_asset.id
+                ),
+
+                start_privilege=(
+                    start_privilege
+                ),
+            )
+        )
+
+        propagated_assets = []
+
+        for propagated in (
+            result.propagated_assets
+        ):
+            asset = (
+                context.assets_by_id[
+                    propagated.asset_id
+                ]
+            )
+
+            path_names = [
+                context.assets_by_id[
+                    asset_id
+                ].name
+
+                for asset_id
+                in (
+                    propagated
+                    .path_asset_ids
+                )
+            ]
+
+            vulnerability = (
+                context
+                .vulnerabilities_by_id
+                .get(
+                    propagated
+                    .via_vulnerability_id
+                )
+            )
+
+            propagated_assets.append(
+                {
+                    "asset":
+                        AssetSerializer(
+                            asset
+                        ).data,
+
+                    "privilege":
+                        propagated
+                        .privilege,
+
+                    "hop_count":
+                        propagated
+                        .hop_count,
+
+                    "path_asset_ids":
+                        list(
+                            propagated
+                            .path_asset_ids
+                        ),
+
+                    "path_asset_names":
+                        path_names,
+
+                    "path_relationship_ids":
+                        list(
+                            propagated
+                            .path_relationship_ids
+                        ),
+
+                    "via_vulnerability": (
+                        VulnerabilitySerializer(
+                            vulnerability
+                        ).data
+
+                        if vulnerability
+                        else None
+                    ),
+                }
+            )
+
+        propagated_ids = {
+            item.asset_id
+            for item
+            in result.propagated_assets
+        }
+
+        critical_count = sum(
+            1
+
+            for asset_id
+            in propagated_ids
+
+            if (
+                context.assets_by_id[
+                    asset_id
+                ].criticality
+                == Asset.Criticality.CRITICAL
+            )
+        )
+
+        blocked_transitions = []
+
+        for blocked in (
+            result.blocked_transitions
+        ):
+            blocked_transitions.append(
+                {
+                    "relationship_id":
+                        blocked
+                        .relationship_id,
+
+                    "source_asset_id":
+                        blocked
+                        .source_asset_id,
+
+                    "source_asset_name":
+                        context.assets_by_id[
+                            blocked
+                            .source_asset_id
+                        ].name,
+
+                    "target_asset_id":
+                        blocked
+                        .target_asset_id,
+
+                    "target_asset_name":
+                        context.assets_by_id[
+                            blocked
+                            .target_asset_id
+                        ].name,
+
+                    "reason_code":
+                        blocked.reason_code,
+
+                    "reason":
+                        blocked.reason,
+                }
+            )
+
+        exploited_vulnerabilities = [
+            VulnerabilitySerializer(
+                context
+                .vulnerabilities_by_id[
+                    vulnerability_id
+                ]
+            ).data
+
+            for vulnerability_id
+            in (
+                result
+                .exploited_vulnerability_ids
+            )
+
+            if vulnerability_id
+            in (
+                context
+                .vulnerabilities_by_id
+            )
+        ]
+
+        response_data = {
+            "simulation_type":
+                "security_aware_propagation",
+
+            "organization":
+                OrganizationSerializer(
+                    organization
+                ).data,
+
+            "start_asset":
+                AssetSerializer(
+                    start_asset
+                ).data,
+
+            "start_privilege":
+                result.start_privilege,
+
+            "summary": {
+                "total_assets":
+                    context.graph
+                    .number_of_nodes(),
+
+                "propagated_asset_count":
+                    len(
+                        result
+                        .propagated_assets
+                    ),
+
+                "propagated_critical_asset_count":
+                    critical_count,
+
+                "max_hops":
+                    result.max_hops,
+
+                "blocked_transition_count":
+                    len(
+                        result
+                        .blocked_transitions
+                    ),
+            },
+
+            "propagated_asset_ids": [
+                asset.asset_id
+
+                for asset
+                in result.propagated_assets
+            ],
+
+            "traversed_relationship_ids":
+                list(
+                    result
+                    .traversed_relationship_ids
+                ),
+
+            "exploited_vulnerability_ids":
+                list(
+                    result
+                    .exploited_vulnerability_ids
+                ),
+
+            "exploited_vulnerabilities":
+                exploited_vulnerabilities,
+
+            "propagated_assets":
+                propagated_assets,
+
+            "blocked_transitions":
+                blocked_transitions,
+
+            "semantics": (
+                "Security-aware modeled "
+                "propagation. Results depend "
+                "on explicitly modeled "
+                "relationships, privileges, "
+                "vulnerabilities and "
+                "authentication conditions. "
+                "They represent potential "
+                "scenario consequences, not "
+                "a prediction that a real "
+                "attack will succeed."
+            ),
+        }
 
         return Response(
             response_data,

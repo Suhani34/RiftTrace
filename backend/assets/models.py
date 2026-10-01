@@ -205,6 +205,12 @@ class Relationship(models.Model):
         WRITES = "WRITES", "Writes"
         AUTHENTICATES_TO = "AUTHENTICATES_TO", "Authenticates To"
         DEPENDS_ON = "DEPENDS_ON", "Depends On"
+    class RequiredSourcePrivilege(
+        models.TextChoices
+    ):
+        NONE = "NONE", "None"
+        LOW = "LOW", "Low"
+        HIGH = "HIGH", "High"
 
     protocol = models.CharField(
         max_length=32,
@@ -222,6 +228,19 @@ class Relationship(models.Model):
 
     requires_authentication = models.BooleanField(
         default=False,
+    )
+
+    required_source_privilege = (
+        models.CharField(
+            max_length=8,
+            choices=(
+                RequiredSourcePrivilege
+                .choices
+            ),
+            default=(
+                RequiredSourcePrivilege.LOW
+            ),
+        )
     )
 
     source = models.ForeignKey(

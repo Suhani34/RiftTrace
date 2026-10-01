@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core.apps.CoreConfig',
     'organizations.apps.OrganizationsConfig',
+    'security.apps.SecurityConfig',
     'assets.apps.AssetsConfig',
     'simulations.apps.SimulationsConfig',
 ]

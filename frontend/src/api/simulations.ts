@@ -6,6 +6,9 @@ import type {
   ReachabilitySimulationResult,
 } from "../types/simulation";
 
+import type {
+  AttackPropagationResult,
+} from "../types/attackSimulation";
 
 export function runReachabilitySimulation(
   organizationId: number,
@@ -25,6 +28,36 @@ export function runReachabilitySimulation(
 
         start_asset:
           startAssetId,
+      }),
+    },
+  );
+}
+
+export function runAttackPropagation(
+  organizationId: number,
+  startAssetId: number,
+  startPrivilege:
+    "LOW"
+    | "HIGH",
+) {
+  return apiRequest<
+    AttackPropagationResult
+  >(
+    "/simulations/"
+    + "attack-propagation/",
+
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        organization:
+          organizationId,
+
+        start_asset:
+          startAssetId,
+
+        start_privilege:
+          startPrivilege,
       }),
     },
   );

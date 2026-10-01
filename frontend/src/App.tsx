@@ -11,6 +11,8 @@ import OrganizationsPage from "./pages/OrganizationsPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
 import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
+import VulnerabilitiesPage
+  from "./pages/VulnerabilitiesPage";
 
 function NotFoundPage() {
   return (
@@ -54,6 +56,13 @@ export default function App() {
           path="relationships"
           element={<RelationshipsPage />}
         />
+
+	<Route
+	  path="vulnerabilities"
+	  element={
+	    <VulnerabilitiesPage />
+	  }
+	/>
 
 	<Route
 	  path="topology"

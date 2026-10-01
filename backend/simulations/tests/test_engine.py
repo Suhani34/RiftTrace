@@ -82,6 +82,7 @@ class ReachabilityEngineTests(
                 protocol="HTTPS",
                 port=443,
                 requires_authentication=True,
+		required_source_privilege="LOW",
             ),
 
             RelationshipRecord(
@@ -92,6 +93,7 @@ class ReachabilityEngineTests(
                 protocol="TCP",
                 port=5432,
                 requires_authentication=True,
+		required_source_privilege="LOW",
             ),
 
             RelationshipRecord(
@@ -102,6 +104,7 @@ class ReachabilityEngineTests(
                 protocol="HTTPS",
                 port=443,
                 requires_authentication=True,
+		required_source_privilege="LOW",
             ),
 
             RelationshipRecord(
@@ -112,6 +115,7 @@ class ReachabilityEngineTests(
                 protocol="HTTPS",
                 port=443,
                 requires_authentication=False,
+		required_source_privilege="LOW",
             ),
         ]
 

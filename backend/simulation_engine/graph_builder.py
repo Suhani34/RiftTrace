@@ -64,6 +64,11 @@ def build_topology_graph(
                 relationship
                 .requires_authentication
             ),
+
+	    required_source_privilege=(
+	        relationship
+	        .required_source_privilege
+	    ),
         )
 
     return graph

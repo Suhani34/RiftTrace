@@ -23,6 +23,7 @@ import type {
   Organization,
   Relationship,
   RelationshipType,
+  RequiredSourcePrivilege,
 } from "../types/models";
 
 
@@ -87,6 +88,13 @@ export default function RelationshipsPage() {
     requiresAuthentication,
     setRequiresAuthentication,
   ] = useState(false);
+
+  const [
+    requiredSourcePrivilege,
+    setRequiredSourcePrivilege,
+  ] = useState<
+    RequiredSourcePrivilege
+  >("LOW");
 
   const [
     selectedOrganization,
@@ -230,6 +238,8 @@ useEffect(() => {
 
 	requires_authentication:
 	  requiresAuthentication,
+	required_source_privilege:
+	  requiredSourcePrivilege,
         description:
           description.trim(),
       });
@@ -437,6 +447,33 @@ useEffect(() => {
 	    />
 
 	    Requires authentication
+	  </label>
+
+	  <label>
+	    Required Source Privilege
+
+	    <select
+	      value={
+	        requiredSourcePrivilege
+	      }
+	      onChange={(event) =>
+	        setRequiredSourcePrivilege(
+	          event.target.value as RequiredSourcePrivilege,
+	        )
+	      }
+	    >
+	      <option value="NONE">
+	        None
+	      </option>
+
+	      <option value="LOW">
+	        Low
+	      </option>
+
+	      <option value="HIGH">
+	        High
+	      </option>
+	    </select>
 	  </label>
 
           <label>
