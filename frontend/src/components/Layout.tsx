@@ -34,6 +34,10 @@ export default function Layout() {
           Assets
         </NavLink>
 
+	<NavLink to="/business-processes">
+	  Business Processes
+	</NavLink>
+
         <NavLink to="/relationships">
           Relationships
         </NavLink>

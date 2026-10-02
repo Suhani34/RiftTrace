@@ -8,6 +8,10 @@ from assets.views import (
     NetworkZoneViewSet,
     RelationshipViewSet,
 )
+from business.views import (
+    BusinessProcessDependencyViewSet,
+    BusinessProcessViewSet,
+)
 from organizations.views import OrganizationViewSet
 
 
@@ -29,6 +33,18 @@ router.register(
     "assets",
     AssetViewSet,
     basename="asset",
+)
+
+router.register(
+    "business-processes",
+    BusinessProcessViewSet,
+    basename="business-process",
+)
+
+router.register(
+    "business-dependencies",
+    BusinessProcessDependencyViewSet,
+    basename="business-dependency",
 )
 
 router.register(

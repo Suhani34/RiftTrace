@@ -22,9 +22,21 @@ import {
 } from "../api/organizations";
 
 import {
+  runBusinessImpactSimulation,
   runAttackPropagation,
   runReachabilitySimulation,
 } from "../api/simulations";
+
+import BusinessImpactPanel
+  from "../components/graph/BusinessImpactPanel";
+
+import {
+  applyBusinessImpactHighlight,
+} from "../graph/applyBusinessImpactHighlight";
+
+import type {
+  BusinessImpactSimulationResult,
+} from "../types/businessImpact";
 
 import AttackPropagationPanel
   from "../components/graph/AttackPropagationPanel";
@@ -92,6 +104,37 @@ export default function TopologyPage() {
   const [
     selectedOrganization,
     setSelectedOrganization,
+  ] = useState("");
+
+  const [
+    businessStartAssetId,
+    setBusinessStartAssetId,
+  ] = useState("");
+
+  const [
+    businessStartPrivilege,
+    setBusinessStartPrivilege,
+  ] = useState<
+    "LOW"
+    | "HIGH"
+  >("LOW");
+
+  const [
+    businessImpactResult,
+    setBusinessImpactResult,
+  ] = useState<
+    BusinessImpactSimulationResult
+    | null
+  >(null);
+
+  const [
+    businessImpactRunning,
+    setBusinessImpactRunning,
+  ] = useState(false);
+
+  const [
+    businessImpactError,
+    setBusinessImpactError,
   ] = useState("");
 
   const [
@@ -303,6 +346,12 @@ export default function TopologyPage() {
 
     setAttackError("");
 
+    setBusinessStartAssetId("");
+
+    setBusinessImpactResult(null);
+
+    setBusinessImpactError("");
+
     setSimulationStartAssetId("");
 
     setSimulationResult(null);
@@ -438,6 +487,90 @@ export default function TopologyPage() {
         null,
       );
 
+
+    setNodes(
+      cleared.nodes
+    );
+
+    setEdges(
+      cleared.edges
+    );
+  }
+
+  async function handleRunBusinessImpact() {
+    if (
+      !selectedOrganization
+      || !businessStartAssetId
+    ) {
+      setBusinessImpactError(
+        "Select a starting asset.",
+      );
+
+      return;
+   }
+
+
+    try {
+      setBusinessImpactRunning(true);
+
+      setBusinessImpactError("");
+
+      setSimulationResult(null);
+
+      setAttackResult(null);
+
+      const result =
+        await runBusinessImpactSimulation(
+          Number(
+            selectedOrganization
+          ),
+
+          Number(
+            businessStartAssetId
+          ),
+
+          businessStartPrivilege,
+        );
+
+      setBusinessImpactResult(
+        result
+      );
+
+      const highlighted =
+        applyBusinessImpactHighlight(
+          nodes,
+          edges,
+          result,
+        );
+
+      setNodes(
+        highlighted.nodes
+      );
+
+      setEdges(
+        highlighted.edges
+      );
+    } catch {
+      setBusinessImpactError(
+        "Unable to analyze "
+        + "business impact.",
+      );
+    } finally {
+      setBusinessImpactRunning(false);
+    }
+  }
+
+  function handleClearBusinessImpact() {
+    setBusinessImpactResult(null);
+
+    setBusinessImpactError("");
+
+    const cleared =
+      applyBusinessImpactHighlight(
+        nodes,
+        edges,
+        null,
+      );
 
     setNodes(
       cleared.nodes
@@ -732,6 +865,49 @@ export default function TopologyPage() {
 	  }
 	/>
 
+	<BusinessImpactPanel
+	  assets={
+	    topology?.nodes ?? []
+	  }
+
+	  selectedStartAssetId={
+	    businessStartAssetId
+	  }
+
+	  startPrivilege={
+	    businessStartPrivilege
+	  }
+
+	  running={
+	    businessImpactRunning
+	  }
+
+	  error={
+	    businessImpactError
+	  }
+
+	  result={
+	    businessImpactResult
+	  }
+
+	  onStartAssetChange={
+	    setBusinessStartAssetId
+	  }
+
+	  onStartPrivilegeChange={
+	    setBusinessStartPrivilege
+	  }
+
+	  onRun={() => {
+	    void handleRunBusinessImpact();
+	  }}
+
+	  onClear={
+	    handleClearBusinessImpact
+	  }
+	/>
+
+	<GraphLegend />
 
 	<GraphLegend />
 

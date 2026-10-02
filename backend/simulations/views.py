@@ -7,6 +7,14 @@ from assets.serializers import (
     AssetSerializer,
 )
 
+from business.serializers import (
+    BusinessProcessSerializer,
+)
+
+from simulation_engine.business_impact import (
+    analyze_business_impact,
+)
+
 from organizations.serializers import (
     OrganizationSerializer,
 )
@@ -29,6 +37,7 @@ from simulation_engine.reachability import (
 )
 
 from .services import (
+    load_business_context,
     load_organization_graph,
 )
 
@@ -495,6 +504,286 @@ class AttackPropagationView(
                 "attack will succeed."
             ),
         }
+
+        return Response(
+            response_data,
+            status=status.HTTP_200_OK,
+        )
+
+class BusinessImpactSimulationView(
+    APIView
+):
+    def post(self, request):
+        serializer = (
+            AttackPropagationRequestSerializer(
+                data=request.data
+            )
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+
+        organization = (
+            serializer.validated_data[
+                "organization"
+            ]
+        )
+
+        start_asset = (
+            serializer.validated_data[
+                "start_asset"
+            ]
+        )
+
+        start_privilege = (
+            serializer.validated_data[
+                "start_privilege"
+            ]
+        )
+
+
+        graph_context = (
+            load_organization_graph(
+                organization
+            )
+        )
+
+        business_context = (
+            load_business_context(
+                organization
+            )
+        )
+
+
+        propagation_result = (
+            analyze_attack_propagation(
+                graph=(
+                    graph_context.graph
+                ),
+
+                vulnerabilities=(
+                    graph_context
+                    .vulnerability_records
+                ),
+
+                start_asset_id=(
+                    start_asset.id
+                ),
+
+                start_privilege=(
+                    start_privilege
+                ),
+            )
+        )
+
+
+        affected_asset_ids = {
+            start_asset.id,
+
+            *(
+                propagated.asset_id
+
+                for propagated
+                in (
+                    propagation_result
+                    .propagated_assets
+                )
+            ),
+        }
+
+
+        business_result = (
+            analyze_business_impact(
+                business_processes=(
+                    business_context
+                    .process_records
+                ),
+
+                dependencies=(
+                    business_context
+                    .dependency_records
+                ),
+
+                affected_asset_ids=(
+                    affected_asset_ids
+                ),
+            )
+        )
+
+
+        propagated_assets = []
+
+        for propagated in (
+            propagation_result
+            .propagated_assets
+        ):
+            asset = (
+                graph_context
+                .assets_by_id[
+                    propagated.asset_id
+                ]
+            )
+
+            propagated_assets.append(
+                {
+                    "asset":
+                        AssetSerializer(
+                            asset
+                        ).data,
+
+                    "privilege":
+                        propagated
+                        .privilege,
+
+                    "hop_count":
+                        propagated
+                        .hop_count,
+                }
+            )
+
+
+        impacted_processes = []
+
+        for impact in (
+            business_result
+            .impacted_processes
+        ):
+            process = (
+                business_context
+                .processes_by_id[
+                    impact
+                    .business_process_id
+                ]
+            )
+
+
+            affected_assets = [
+                AssetSerializer(
+                    graph_context
+                    .assets_by_id[
+                        asset_id
+                    ]
+                ).data
+
+                for asset_id
+                in (
+                    impact
+                    .affected_asset_ids
+                )
+            ]
+
+
+            impacted_processes.append(
+                {
+                    "business_process":
+                        BusinessProcessSerializer(
+                            process
+                        ).data,
+
+                    "strongest_dependency_level":
+                        impact
+                        .strongest_dependency_level,
+
+                    "affected_asset_ids":
+                        list(
+                            impact
+                            .affected_asset_ids
+                        ),
+
+                    "affected_assets":
+                        affected_assets,
+
+                    "affected_dependency_ids":
+                        list(
+                            impact
+                            .affected_dependency_ids
+                        ),
+                }
+            )
+
+
+        response_data = {
+            "simulation_type":
+                "business_impact",
+
+            "organization":
+                OrganizationSerializer(
+                    organization
+                ).data,
+
+            "start_asset":
+                AssetSerializer(
+                    start_asset
+                ).data,
+
+            "start_privilege":
+                propagation_result
+                .start_privilege,
+
+            "technical_consequence": {
+                "affected_asset_ids":
+                    sorted(
+                        affected_asset_ids
+                    ),
+
+                "propagated_asset_ids": [
+                    propagated.asset_id
+
+                    for propagated
+                    in (
+                        propagation_result
+                        .propagated_assets
+                    )
+                ],
+
+                "traversed_relationship_ids":
+                    list(
+                        propagation_result
+                        .traversed_relationship_ids
+                    ),
+
+                "propagated_assets":
+                    propagated_assets,
+
+                "blocked_transition_count":
+                    len(
+                        propagation_result
+                        .blocked_transitions
+                    ),
+            },
+
+            "business_impact": {
+                "summary": {
+                    "impacted_process_count":
+                        business_result
+                        .impacted_process_count,
+
+                    "critical_process_count":
+                        business_result
+                        .critical_process_count,
+
+                    "essential_dependency_hit_count":
+                        business_result
+                        .essential_dependency_hit_count,
+                },
+
+                "impacted_processes":
+                    impacted_processes,
+            },
+
+            "semantics": (
+                "Potential business impact "
+                "derived from explicitly "
+                "modeled dependencies between "
+                "technical assets and business "
+                "processes. An impacted process "
+                "is not a prediction of actual "
+                "business outage."
+            ),
+        }
+
 
         return Response(
             response_data,

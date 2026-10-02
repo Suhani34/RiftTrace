@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',
+    'business.apps.BusinessConfig',
     'assets.apps.AssetsConfig',
     'simulations.apps.SimulationsConfig',
 ]

@@ -7,6 +7,16 @@ from assets.models import (
     Relationship,
 )
 
+from business.models import (
+    BusinessProcess,
+    BusinessProcessDependency,
+)
+
+from simulation_engine.business_records import (
+    BusinessDependencyRecord,
+    BusinessProcessRecord,
+)
+
 from organizations.models import (
     Organization,
 )
@@ -49,6 +59,30 @@ class OrganizationGraphContext:
 
     vulnerability_records: tuple[
         VulnerabilityRecord,
+        ...,
+    ]
+
+@dataclass(
+    slots=True,
+)
+class BusinessContext:
+    processes_by_id: dict[
+        int,
+        BusinessProcess,
+    ]
+
+    dependencies_by_id: dict[
+        int,
+        BusinessProcessDependency,
+    ]
+
+    process_records: tuple[
+        BusinessProcessRecord,
+        ...,
+    ]
+
+    dependency_records: tuple[
+        BusinessDependencyRecord,
         ...,
     ]
 
@@ -235,4 +269,99 @@ def load_organization_graph(
             for relationship
             in relationships
         },
+    )
+
+def load_business_context(
+    organization: Organization,
+) -> BusinessContext:
+    processes = list(
+        BusinessProcess.objects.filter(
+            organization=organization
+        )
+    )
+
+
+    dependencies = list(
+        BusinessProcessDependency
+        .objects
+        .filter(
+            business_process__organization=(
+                organization
+            )
+        )
+        .select_related(
+            "business_process",
+            "asset",
+        )
+    )
+
+
+    process_records = tuple(
+        BusinessProcessRecord(
+            id=process.id,
+
+            name=process.name,
+
+            criticality=(
+                process.criticality
+            ),
+
+            impact_description=(
+                process
+                .impact_description
+            ),
+        )
+
+        for process
+        in processes
+    )
+
+
+    dependency_records = tuple(
+        BusinessDependencyRecord(
+            id=dependency.id,
+
+            business_process_id=(
+                dependency
+                .business_process_id
+            ),
+
+            asset_id=(
+                dependency.asset_id
+            ),
+
+            dependency_level=(
+                dependency
+                .dependency_level
+            ),
+        )
+
+        for dependency
+        in dependencies
+    )
+
+
+    return BusinessContext(
+        processes_by_id={
+            process.id: process
+
+            for process
+            in processes
+        },
+
+        dependencies_by_id={
+            dependency.id:
+                dependency
+
+            for dependency
+            in dependencies
+        },
+
+        process_records=(
+            process_records
+        ),
+
+        dependency_records=(
+            dependency_records
+        ),
     )

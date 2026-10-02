@@ -1311,3 +1311,135 @@ button:disabled {
   color: #7c2d12;
   font-size: 13px;
 }
+
+.business-process-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(300px, 1fr)
+    );
+
+  gap: 16px;
+}
+
+.business-process-card {
+  padding: 18px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.business-process-card-header {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    flex-start;
+
+  gap: 12px;
+}
+
+.business-process-card-header
+> div {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 4px;
+}
+
+.business-process-card-header
+span {
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.business-dependency-list {
+  margin-top: 16px;
+
+  padding-top: 14px;
+
+  border-top:
+    1px solid #e2e8f0;
+}
+
+.business-dependency-row {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    center;
+
+  gap: 12px;
+
+  margin-top: 8px;
+
+  padding: 8px 10px;
+
+  background: white;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+}
+
+.business-impact-panel {
+  border-left:
+    4px solid #7c3aed;
+}
+
+.business-impact-results {
+  margin-top: 20px;
+}
+
+.business-impact-result-card {
+  margin-bottom: 12px;
+
+  padding: 14px;
+
+  background: #faf5ff;
+
+  border:
+    1px solid #e9d5ff;
+
+  border-radius: 10px;
+}
+
+.business-impact-result-card
+> div {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 12px;
+}
+
+.business-impact-result-card
+> div span {
+  color: #7e22ce;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.business-impact-result-card p {
+  margin:
+    8px
+    0
+    0;
+
+  color: #475569;
+
+  font-size: 13px;
+}

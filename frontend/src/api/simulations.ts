@@ -10,6 +10,10 @@ import type {
   AttackPropagationResult,
 } from "../types/attackSimulation";
 
+import type {
+  BusinessImpactSimulationResult,
+} from "../types/businessImpact";
+
 export function runReachabilitySimulation(
   organizationId: number,
   startAssetId: number,
@@ -45,6 +49,35 @@ export function runAttackPropagation(
   >(
     "/simulations/"
     + "attack-propagation/",
+
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        organization:
+          organizationId,
+
+        start_asset:
+          startAssetId,
+
+        start_privilege:
+          startPrivilege,
+      }),
+    },
+  );
+}
+
+export function runBusinessImpactSimulation(
+  organizationId: number,
+  startAssetId: number,
+  startPrivilege:
+    "LOW"
+    | "HIGH",
+) {
+  return apiRequest<
+    BusinessImpactSimulationResult
+  >(
+    "/simulations/business-impact/",
 
     {
       method: "POST",

@@ -13,6 +13,8 @@ import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
 import VulnerabilitiesPage
   from "./pages/VulnerabilitiesPage";
+import BusinessProcessesPage
+  from "./pages/BusinessProcessesPage";
 
 function NotFoundPage() {
   return (
@@ -51,6 +53,13 @@ export default function App() {
           path="assets"
           element={<AssetsPage />}
         />
+
+	<Route
+	  path="business-processes"
+	  element={
+	    <BusinessProcessesPage />
+	  }
+	/>
 
         <Route
           path="relationships"
