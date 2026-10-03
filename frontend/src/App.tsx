@@ -15,7 +15,8 @@ import VulnerabilitiesPage
   from "./pages/VulnerabilitiesPage";
 import BusinessProcessesPage
   from "./pages/BusinessProcessesPage";
-
+import CounterfactualPage
+  from "./pages/CounterfactualPage";
 function NotFoundPage() {
   return (
     <section className="panel">
@@ -54,13 +55,6 @@ export default function App() {
           element={<AssetsPage />}
         />
 
-	<Route
-	  path="business-processes"
-	  element={
-	    <BusinessProcessesPage />
-	  }
-	/>
-
         <Route
           path="relationships"
           element={<RelationshipsPage />}
@@ -76,6 +70,21 @@ export default function App() {
 	<Route
 	  path="topology"
 	  element={<TopologyPage />}
+	/>
+
+        <Route
+          path="business-processes"
+          element={
+            <BusinessProcessesPage />
+          }
+        />
+
+
+	<Route
+	  path="counterfactual"
+	  element={
+	    <CounterfactualPage />
+	  }
 	/>
 
         <Route

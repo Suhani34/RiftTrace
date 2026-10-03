@@ -2,9 +2,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from assets.models import Asset
+from assets.models import (
+    Asset,
+    Relationship,
+)
 from assets.serializers import (
     AssetSerializer,
+    RelationshipSerializer,
 )
 
 from business.serializers import (
@@ -19,8 +23,16 @@ from organizations.serializers import (
     OrganizationSerializer,
 )
 
+from security.models import (
+    Vulnerability,
+)
+
 from security.serializers import (
     VulnerabilitySerializer,
+)
+
+from simulation_engine.counterfactual import (
+    analyze_counterfactual,
 )
 
 from simulation_engine.attack_propagation import (
@@ -30,6 +42,7 @@ from simulation_engine.attack_propagation import (
 from .serializers import (
     AttackPropagationRequestSerializer,
     ReachabilitySimulationRequestSerializer,
+    CounterfactualSimulationRequestSerializer,
 )
 
 from simulation_engine.reachability import (
@@ -41,6 +54,168 @@ from .services import (
     load_organization_graph,
 )
 
+def _serialize_counterfactual_run(
+    run,
+    graph_context,
+    business_context,
+):
+    propagated_assets = [
+        {
+            "asset":
+                AssetSerializer(
+                    graph_context
+                    .assets_by_id[
+                        propagated.asset_id
+                    ]
+                ).data,
+
+            "privilege":
+                propagated.privilege,
+
+            "hop_count":
+                propagated.hop_count,
+        }
+
+        for propagated
+        in run
+        .propagation
+        .propagated_assets
+    ]
+
+
+    impacted_processes = [
+        {
+            "business_process":
+                BusinessProcessSerializer(
+                    business_context
+                    .processes_by_id[
+                        impact
+                        .business_process_id
+                    ]
+                ).data,
+
+            "strongest_dependency_level":
+                impact
+                .strongest_dependency_level,
+
+            "affected_asset_ids":
+                list(
+                    impact
+                    .affected_asset_ids
+                ),
+
+            "affected_assets": [
+                AssetSerializer(
+                    graph_context
+                    .assets_by_id[
+                        asset_id
+                    ]
+                ).data
+
+                for asset_id
+                in (
+                    impact
+                    .affected_asset_ids
+                )
+            ],
+        }
+
+        for impact
+        in run
+        .business_impact
+        .impacted_processes
+    ]
+
+
+    critical_asset_count = sum(
+        1
+
+        for asset_id
+        in run.affected_asset_ids
+
+        if (
+            graph_context
+            .graph
+            .nodes[
+                asset_id
+            ]
+            .get("criticality")
+            == "CRITICAL"
+        )
+    )
+
+
+    return {
+        "technical_consequence": {
+            "affected_asset_ids":
+                list(
+                    run.affected_asset_ids
+                ),
+
+            "propagated_asset_ids": [
+                propagated.asset_id
+
+                for propagated
+                in run
+                .propagation
+                .propagated_assets
+            ],
+
+            "propagated_asset_count":
+                len(
+                    run
+                    .propagation
+                    .propagated_assets
+                ),
+
+            "critical_asset_count":
+                critical_asset_count,
+
+            "traversed_relationship_ids":
+                list(
+                    run
+                    .propagation
+                    .traversed_relationship_ids
+                ),
+
+            "exploited_vulnerability_ids":
+                list(
+                    run
+                    .propagation
+                    .exploited_vulnerability_ids
+                ),
+
+            "max_hops":
+                run
+                .propagation
+                .max_hops,
+
+            "propagated_assets":
+                propagated_assets,
+        },
+
+        "business_impact": {
+            "summary": {
+                "impacted_process_count":
+                    run
+                    .business_impact
+                    .impacted_process_count,
+
+                "critical_process_count":
+                    run
+                    .business_impact
+                    .critical_process_count,
+
+                "essential_dependency_hit_count":
+                    run
+                    .business_impact
+                    .essential_dependency_hit_count,
+            },
+
+            "impacted_processes":
+                impacted_processes,
+        },
+    }
 
 class ReachabilitySimulationView(
     APIView
@@ -781,6 +956,323 @@ class BusinessImpactSimulationView(
                 "processes. An impacted process "
                 "is not a prediction of actual "
                 "business outage."
+            ),
+        }
+
+
+        return Response(
+            response_data,
+            status=status.HTTP_200_OK,
+        )
+
+class CounterfactualSimulationView(
+    APIView
+):
+    def post(self, request):
+        serializer = (
+            CounterfactualSimulationRequestSerializer(
+                data=request.data
+            )
+        )
+
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+
+        organization = (
+            serializer.validated_data[
+                "organization"
+            ]
+        )
+
+
+        start_asset = (
+            serializer.validated_data[
+                "start_asset"
+            ]
+        )
+
+
+        start_privilege = (
+            serializer.validated_data[
+                "start_privilege"
+            ]
+        )
+
+
+        disabled_relationship_ids = (
+            tuple(
+                serializer
+                .validated_data[
+                    "disabled_relationship_ids"
+                ]
+            )
+        )
+
+
+        disabled_vulnerability_ids = (
+            tuple(
+                serializer
+                .validated_data[
+                    "disabled_vulnerability_ids"
+                ]
+            )
+        )
+
+
+        graph_context = (
+            load_organization_graph(
+                organization
+            )
+        )
+
+
+        business_context = (
+            load_business_context(
+                organization
+            )
+        )
+
+
+        comparison = (
+            analyze_counterfactual(
+                graph=(
+                    graph_context.graph
+                ),
+
+                vulnerabilities=(
+                    graph_context
+                    .vulnerability_records
+                ),
+
+                business_processes=(
+                    business_context
+                    .process_records
+                ),
+
+                dependencies=(
+                    business_context
+                    .dependency_records
+                ),
+
+                start_asset_id=(
+                    start_asset.id
+                ),
+
+                start_privilege=(
+                    start_privilege
+                ),
+
+                disabled_relationship_ids=(
+                    disabled_relationship_ids
+                ),
+
+                disabled_vulnerability_ids=(
+                    disabled_vulnerability_ids
+                ),
+            )
+        )
+
+
+        disabled_relationships = (
+            Relationship.objects.filter(
+                id__in=(
+                    disabled_relationship_ids
+                )
+            )
+            .select_related(
+                "source",
+                "target",
+            )
+            .order_by("id")
+        )
+
+
+        disabled_vulnerabilities = (
+            Vulnerability.objects.filter(
+                id__in=(
+                    disabled_vulnerability_ids
+                )
+            )
+            .select_related(
+                "asset",
+            )
+            .order_by("id")
+        )
+
+
+        prevented_assets = [
+            AssetSerializer(
+                graph_context
+                .assets_by_id[
+                    asset_id
+                ]
+            ).data
+
+            for asset_id
+            in (
+                comparison
+                .prevented_propagated_asset_ids
+            )
+        ]
+
+
+        prevented_critical_assets = [
+            AssetSerializer(
+                graph_context
+                .assets_by_id[
+                    asset_id
+                ]
+            ).data
+
+            for asset_id
+            in (
+                comparison
+                .prevented_critical_asset_ids
+            )
+        ]
+
+
+        avoided_processes = [
+            BusinessProcessSerializer(
+                business_context
+                .processes_by_id[
+                    process_id
+                ]
+            ).data
+
+            for process_id
+            in (
+                comparison
+                .avoided_business_process_ids
+            )
+        ]
+
+
+        response_data = {
+            "simulation_type":
+                "counterfactual_comparison",
+
+            "organization":
+                OrganizationSerializer(
+                    organization
+                ).data,
+
+            "start_asset":
+                AssetSerializer(
+                    start_asset
+                ).data,
+
+            "start_privilege":
+                start_privilege,
+
+            "modifications": {
+                "disabled_relationships": [
+                    RelationshipSerializer(
+                        relationship
+                    ).data
+
+                    for relationship
+                    in disabled_relationships
+                ],
+
+                "disabled_vulnerabilities": [
+                    VulnerabilitySerializer(
+                        vulnerability
+                    ).data
+
+                    for vulnerability
+                    in disabled_vulnerabilities
+                ],
+            },
+
+            "baseline":
+                _serialize_counterfactual_run(
+                    comparison.baseline,
+                    graph_context,
+                    business_context,
+                ),
+
+            "counterfactual":
+                _serialize_counterfactual_run(
+                    comparison
+                    .counterfactual,
+                    graph_context,
+                    business_context,
+                ),
+
+            "comparison": {
+                "propagated_asset_reduction":
+                    comparison
+                    .propagated_asset_reduction,
+
+                "critical_asset_reduction":
+                    comparison
+                    .critical_asset_reduction,
+
+                "impacted_process_reduction":
+                    comparison
+                    .impacted_process_reduction,
+
+                "critical_process_reduction":
+                    comparison
+                    .critical_process_reduction,
+
+                "essential_dependency_hit_reduction":
+                    comparison
+                    .essential_dependency_hit_reduction,
+
+                "prevented_propagated_asset_ids":
+                    list(
+                        comparison
+                        .prevented_propagated_asset_ids
+                    ),
+
+                "prevented_propagated_assets":
+                    prevented_assets,
+
+                "prevented_critical_asset_ids":
+                    list(
+                        comparison
+                        .prevented_critical_asset_ids
+                    ),
+
+                "prevented_critical_assets":
+                    prevented_critical_assets,
+
+                "avoided_business_process_ids":
+                    list(
+                        comparison
+                        .avoided_business_process_ids
+                    ),
+
+                "avoided_business_processes":
+                    avoided_processes,
+
+                "prevented_traversed_relationship_ids":
+                    list(
+                        comparison
+                        .prevented_traversed_relationship_ids
+                    ),
+
+                "prevented_exploited_vulnerability_ids":
+                    list(
+                        comparison
+                        .prevented_exploited_vulnerability_ids
+                    ),
+            },
+
+            "semantics": (
+                "Counterfactual comparison "
+                "between the currently modeled "
+                "baseline and a temporary "
+                "in-memory scenario. Selected "
+                "relationships and "
+                "vulnerabilities are not "
+                "deleted or modified in the "
+                "database."
             ),
         }
 

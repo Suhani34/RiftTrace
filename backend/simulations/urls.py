@@ -4,6 +4,7 @@ from .views import (
     BusinessImpactSimulationView,
     AttackPropagationView,
     ReachabilitySimulationView,
+    CounterfactualSimulationView,
 )
 
 
@@ -22,5 +23,10 @@ urlpatterns = [
         "business-impact/",
         BusinessImpactSimulationView.as_view(),
         name="simulation-business-impact",
+    ),
+    path(
+        "counterfactual/",
+        CounterfactualSimulationView.as_view(),
+        name="simulation-counterfactual",
     ),
 ]
