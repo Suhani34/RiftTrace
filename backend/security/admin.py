@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import Vulnerability
+from .models import (
+    SecurityControl,
+    Vulnerability,
+)
 
 
 @admin.register(Vulnerability)
@@ -16,6 +19,7 @@ class VulnerabilityAdmin(
         "grants_privilege",
         "cvss_score",
         "is_exploitable",
+	"bypasses_mfa",
     )
 
     list_filter = (
@@ -30,4 +34,26 @@ class VulnerabilityAdmin(
         "title",
         "reference_id",
         "asset__name",
+    )
+
+@admin.register(SecurityControl)
+class SecurityControlAdmin(
+    admin.ModelAdmin
+):
+    list_display = (
+        "name",
+        "organization",
+        "control_type",
+        "target_relationship",
+        "target_vulnerability",
+    )
+
+    list_filter = (
+        "control_type",
+        "organization",
+    )
+
+    search_fields = (
+        "name",
+        "description",
     )

@@ -42,6 +42,10 @@ export default function Layout() {
 	  Vulnerabilities
 	</NavLink>
 
+	<NavLink to="/security-controls">
+	  Security Controls
+	</NavLink>
+
         <NavLink to="/topology">
           Topology
         </NavLink>
@@ -53,6 +57,10 @@ export default function Layout() {
 
 	<NavLink to="/counterfactual">
 	  Counterfactual
+	</NavLink>
+
+	<NavLink to="/control-simulation">
+	  Control Simulation
 	</NavLink>
 
       </nav>

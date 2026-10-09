@@ -85,7 +85,21 @@ class CounterfactualComparison:
 def _create_counterfactual_graph(
     graph: nx.MultiDiGraph,
 
-    disabled_relationship_ids: set[int],
+    disabled_relationship_ids: set[
+        int
+    ],
+
+    force_authentication_relationship_ids: set[
+        int
+    ],
+
+    force_mfa_relationship_ids: set[
+        int
+    ],
+
+    high_privilege_relationship_ids: set[
+        int
+    ],
 ) -> nx.MultiDiGraph:
     counterfactual_graph = (
         graph.copy()
@@ -118,12 +132,47 @@ def _create_counterfactual_graph(
             counterfactual_graph.remove_edge(
                 source_id,
                 target_id,
+
                 key=edge_key,
             )
 
+            continue
+
+
+        if (
+            relationship_id
+            in (
+                force_authentication_relationship_ids
+            )
+        ):
+            edge_data[
+                "requires_authentication"
+            ] = True
+
+
+        if (
+            relationship_id
+            in force_mfa_relationship_ids
+        ):
+            edge_data[
+                "requires_authentication"
+            ] = True
+
+            edge_data[
+                "requires_mfa"
+            ] = True
+
+
+        if (
+            relationship_id
+            in high_privilege_relationship_ids
+        ):
+            edge_data[
+                "required_source_privilege"
+            ] = "HIGH"
+
 
     return counterfactual_graph
-
 
 def _create_counterfactual_vulnerabilities(
     vulnerabilities: tuple[
@@ -263,6 +312,21 @@ def analyze_counterfactual(
         int,
         ...,
     ] = (),
+
+    force_authentication_relationship_ids: tuple[
+        int,
+        ...,
+    ] = (),
+
+    force_mfa_relationship_ids: tuple[
+        int,
+        ...,
+    ] = (),
+
+    high_privilege_relationship_ids: tuple[
+        int,
+        ...,
+    ] = (),
 ) -> CounterfactualComparison:
     disabled_relationship_set = set(
         disabled_relationship_ids
@@ -272,6 +336,17 @@ def analyze_counterfactual(
         disabled_vulnerability_ids
     )
 
+    force_authentication_set = set(
+        force_authentication_relationship_ids
+    )
+
+    force_mfa_set = set(
+        force_mfa_relationship_ids
+    )
+
+    high_privilege_set = set(
+        high_privilege_relationship_ids
+    )
 
     baseline = _run_scenario(
         graph=graph,
@@ -295,7 +370,6 @@ def analyze_counterfactual(
         ),
     )
 
-
     counterfactual_graph = (
         _create_counterfactual_graph(
             graph=graph,
@@ -303,9 +377,20 @@ def analyze_counterfactual(
             disabled_relationship_ids=(
                 disabled_relationship_set
             ),
+
+            force_authentication_relationship_ids=(
+                force_authentication_set
+            ),
+
+            force_mfa_relationship_ids=(
+                force_mfa_set
+            ),
+
+            high_privilege_relationship_ids=(
+                high_privilege_set
+            ),
         )
     )
-
 
     counterfactual_vulnerabilities = (
         _create_counterfactual_vulnerabilities(

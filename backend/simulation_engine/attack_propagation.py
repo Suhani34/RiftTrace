@@ -195,6 +195,7 @@ def _select_remote_vulnerability(
     source_asset_id: int,
     target_asset_id: int,
     requires_authentication: bool,
+    requires_mfa: bool,
     vulnerabilities_by_asset: dict[
         int,
         list[VulnerabilityRecord],
@@ -350,7 +351,36 @@ def _select_remote_vulnerability(
             ),
         )
 
-    authentication_eligible.sort(
+    mfa_eligible = [
+        vulnerability
+
+        for vulnerability
+        in authentication_eligible
+
+        if (
+            not requires_mfa
+
+            or vulnerability
+            .bypasses_mfa
+        )
+    ]
+
+
+    if not mfa_eligible:
+        return (
+            None,
+
+            "MFA_REQUIRED",
+
+            (
+                "Relationship requires MFA "
+                "and no eligible modeled "
+                "vulnerability can bypass "
+                "the MFA requirement."
+            ),
+        )
+
+    mfa_eligible.sort(
         key=lambda vulnerability: (
             -_privilege_rank(
                 vulnerability
@@ -361,7 +391,7 @@ def _select_remote_vulnerability(
     )
 
     return (
-        authentication_eligible[0],
+        mfa_eligible[0],
         "",
         "",
     )
@@ -528,6 +558,15 @@ def analyze_attack_propagation(
                             )
                         )
                     ),
+
+		    requires_mfa=(
+    			bool(
+		            edge_data.get(
+		                "requires_mfa",
+		                False,
+		            )
+		        )
+		    ),
 
                     vulnerabilities_by_asset=(
                         vulnerabilities_by_asset
@@ -705,6 +744,15 @@ def analyze_attack_propagation(
                                 )
                             )
                         ),
+
+		        requires_mfa=(
+			    bool(
+			        edge_data.get(
+			            "requires_mfa",
+			            False,
+			        )
+			    )
+			),
 
                         vulnerabilities_by_asset=(
                             vulnerabilities_by_asset

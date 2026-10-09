@@ -1680,3 +1680,173 @@ span {
     min-width: 640px;
   }
 }
+
+.security-control-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        280px,
+        1fr
+      )
+    );
+
+  gap: 14px;
+}
+
+.security-control-card {
+  padding: 16px;
+
+  background: #f8fafc;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius: 10px;
+}
+
+.security-control-card
+> div {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 12px;
+}
+
+.security-control-card
+> div span {
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.control-selection-heading {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  align-items:
+    flex-start;
+
+  margin-bottom: 15px;
+}
+
+.control-selection-heading h3 {
+  margin:
+    0
+    0
+    5px;
+}
+
+.control-selection-heading p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+.control-selection-heading
+> strong {
+  color: #2563eb;
+
+  white-space: nowrap;
+}
+
+.control-selection-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        280px,
+        1fr
+      )
+    );
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+}
+
+.control-selection-card {
+  display: flex;
+
+  align-items:
+    flex-start;
+
+  gap: 10px;
+
+  padding: 12px;
+
+  background: #f8fafc;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+}
+
+.control-selection-card:has(
+  input:checked
+) {
+  background: #eff6ff;
+
+  border-color: #93c5fd;
+}
+
+.control-selection-card input {
+  margin-top: 4px;
+}
+
+.control-selection-card
+> div {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 4px;
+}
+
+.control-selection-card span {
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.control-result-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        270px,
+        1fr
+      )
+    );
+
+  gap: 18px;
+}
+
+@media (
+  max-width: 800px
+) {
+  .control-selection-heading {
+    flex-direction:
+      column;
+  }
+}

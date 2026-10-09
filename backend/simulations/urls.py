@@ -5,6 +5,7 @@ from .views import (
     AttackPropagationView,
     ReachabilitySimulationView,
     CounterfactualSimulationView,
+    SecurityControlSimulationView,
 )
 
 
@@ -29,4 +30,12 @@ urlpatterns = [
         CounterfactualSimulationView.as_view(),
         name="simulation-counterfactual",
     ),
+    path(
+        "security-controls/",
+        SecurityControlSimulationView.as_view(),
+        name=(
+            "simulation-security-controls"
+        ),
+    ),
 ]
+

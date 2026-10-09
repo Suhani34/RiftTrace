@@ -1,10 +1,14 @@
 from rest_framework import viewsets
 
-from .models import Vulnerability
-from .serializers import (
-    VulnerabilitySerializer,
+from .models import (
+    SecurityControl,
+    Vulnerability,
 )
 
+from .serializers import (
+    SecurityControlSerializer,
+    VulnerabilitySerializer,
+)
 
 class VulnerabilityViewSet(
     viewsets.ModelViewSet
@@ -82,3 +86,74 @@ class VulnerabilityViewSet(
 
         return queryset
 
+class SecurityControlViewSet(
+    viewsets.ModelViewSet
+):
+    serializer_class = (
+        SecurityControlSerializer
+    )
+
+
+    queryset = (
+        SecurityControl.objects
+        .select_related(
+            "organization",
+
+            "target_relationship",
+
+            (
+                "target_relationship"
+                "__source"
+            ),
+
+            (
+                "target_relationship"
+                "__target"
+            ),
+
+            "target_vulnerability",
+
+            (
+                "target_vulnerability"
+                "__asset"
+            ),
+        )
+        .all()
+    )
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+
+        organization = (
+            self.request
+            .query_params
+            .get("organization")
+        )
+
+
+        control_type = (
+            self.request
+            .query_params
+            .get("control_type")
+        )
+
+
+        if organization:
+            queryset = queryset.filter(
+                organization_id=(
+                    organization
+                )
+            )
+
+
+        if control_type:
+            queryset = queryset.filter(
+                control_type=(
+                    control_type
+                )
+            )
+
+
+        return queryset

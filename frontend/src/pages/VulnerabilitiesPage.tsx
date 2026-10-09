@@ -98,6 +98,11 @@ export default function VulnerabilitiesPage() {
   ] = useState(false);
 
   const [
+    bypassesMfa,
+    setBypassesMfa,
+  ] = useState(false);
+
+  const [
     isExploitable,
     setIsExploitable,
   ] = useState(true);
@@ -300,6 +305,9 @@ export default function VulnerabilitiesPage() {
 
         bypasses_authentication:
           bypassesAuthentication,
+
+	bypasses_mfa:
+	  bypassesMfa,
 
         is_exploitable:
           isExploitable,
@@ -602,6 +610,23 @@ export default function VulnerabilitiesPage() {
             Bypasses Authentication
           </label>
 
+	  <label className="checkbox-label">
+	    <input
+	      type="checkbox"
+
+	      checked={
+	        bypassesMfa
+	      }
+
+	      onChange={(event) =>
+	        setBypassesMfa(
+	          event.target.checked,
+	        )
+	      }
+	    />
+ 
+	    Bypasses MFA
+	  </label>
 
           <label className="checkbox-label">
             <input
@@ -726,6 +751,17 @@ export default function VulnerabilitiesPage() {
                       : "No"
                     }
                   </p>
+
+		  <p>
+		    MFA bypass:
+		    {" "}
+		    {
+		      vulnerability
+		        .bypasses_mfa
+		      ? "Yes"
+		      : "No"
+		    }
+		  </p>
 
                   <p>
                     Simulation status:{" "}

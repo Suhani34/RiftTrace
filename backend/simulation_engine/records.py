@@ -57,3 +57,5 @@ class VulnerabilityRecord:
     bypasses_authentication: bool
 
     is_exploitable: bool
+
+    bypasses_mfa: bool = False

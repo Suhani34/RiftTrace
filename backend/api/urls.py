@@ -1,6 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from security.views import (
+    SecurityControlViewSet,
     VulnerabilityViewSet,
 )
 from assets.views import (
@@ -51,6 +52,14 @@ router.register(
     "vulnerabilities",
     VulnerabilityViewSet,
     basename="vulnerability",
+)
+
+router.register(
+    "security-controls",
+
+    SecurityControlViewSet,
+
+    basename="security-control",
 )
 
 router.register(

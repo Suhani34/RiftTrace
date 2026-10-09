@@ -19,6 +19,10 @@ from simulation_engine.business_impact import (
     analyze_business_impact,
 )
 
+from simulation_engine.security_controls import (
+    analyze_security_controls,
+)
+
 from organizations.serializers import (
     OrganizationSerializer,
 )
@@ -28,6 +32,7 @@ from security.models import (
 )
 
 from security.serializers import (
+    SecurityControlSerializer,
     VulnerabilitySerializer,
 )
 
@@ -43,6 +48,7 @@ from .serializers import (
     AttackPropagationRequestSerializer,
     ReachabilitySimulationRequestSerializer,
     CounterfactualSimulationRequestSerializer,
+    SecurityControlSimulationRequestSerializer,
 )
 
 from simulation_engine.reachability import (
@@ -52,6 +58,7 @@ from simulation_engine.reachability import (
 from .services import (
     load_business_context,
     load_organization_graph,
+    load_security_control_context,
 )
 
 def _serialize_counterfactual_run(
@@ -215,6 +222,120 @@ def _serialize_counterfactual_run(
             "impacted_processes":
                 impacted_processes,
         },
+    }
+
+def _serialize_comparison(
+    comparison,
+    graph_context,
+    business_context,
+):
+    prevented_assets = [
+        AssetSerializer(
+            graph_context
+            .assets_by_id[
+                asset_id
+            ]
+        ).data
+
+        for asset_id
+        in (
+            comparison
+            .prevented_propagated_asset_ids
+        )
+    ]
+
+
+    prevented_critical_assets = [
+        AssetSerializer(
+            graph_context
+            .assets_by_id[
+                asset_id
+            ]
+        ).data
+
+        for asset_id
+        in (
+            comparison
+            .prevented_critical_asset_ids
+        )
+    ]
+
+
+    avoided_processes = [
+        BusinessProcessSerializer(
+            business_context
+            .processes_by_id[
+                process_id
+            ]
+        ).data
+
+        for process_id
+        in (
+            comparison
+            .avoided_business_process_ids
+        )
+    ]
+
+
+    return {
+        "propagated_asset_reduction":
+            comparison
+            .propagated_asset_reduction,
+
+        "critical_asset_reduction":
+            comparison
+            .critical_asset_reduction,
+
+        "impacted_process_reduction":
+            comparison
+            .impacted_process_reduction,
+
+        "critical_process_reduction":
+            comparison
+            .critical_process_reduction,
+
+        "essential_dependency_hit_reduction":
+            comparison
+            .essential_dependency_hit_reduction,
+
+        "prevented_propagated_asset_ids":
+            list(
+                comparison
+                .prevented_propagated_asset_ids
+            ),
+
+        "prevented_propagated_assets":
+            prevented_assets,
+
+        "prevented_critical_asset_ids":
+            list(
+                comparison
+                .prevented_critical_asset_ids
+            ),
+
+        "prevented_critical_assets":
+            prevented_critical_assets,
+
+        "avoided_business_process_ids":
+            list(
+                comparison
+                .avoided_business_process_ids
+            ),
+
+        "avoided_business_processes":
+            avoided_processes,
+
+        "prevented_traversed_relationship_ids":
+            list(
+                comparison
+                .prevented_traversed_relationship_ids
+            ),
+
+        "prevented_exploited_vulnerability_ids":
+            list(
+                comparison
+                .prevented_exploited_vulnerability_ids
+            ),
     }
 
 class ReachabilitySimulationView(
@@ -1279,5 +1400,230 @@ class CounterfactualSimulationView(
 
         return Response(
             response_data,
+            status=status.HTTP_200_OK,
+        )
+
+class SecurityControlSimulationView(
+    APIView
+):
+    def post(self, request):
+        serializer = (
+            SecurityControlSimulationRequestSerializer(
+                data=request.data
+            )
+        )
+
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+
+        organization = (
+            serializer.validated_data[
+                "organization"
+            ]
+        )
+
+
+        start_asset = (
+            serializer.validated_data[
+                "start_asset"
+            ]
+        )
+
+
+        start_privilege = (
+            serializer.validated_data[
+                "start_privilege"
+            ]
+        )
+
+
+        control_ids = (
+            serializer.validated_data[
+                "control_ids"
+            ]
+        )
+
+
+        graph_context = (
+            load_organization_graph(
+                organization
+            )
+        )
+
+
+        business_context = (
+            load_business_context(
+                organization
+            )
+        )
+
+
+        control_context = (
+            load_security_control_context(
+                organization,
+
+                control_ids,
+            )
+        )
+
+
+        result = (
+            analyze_security_controls(
+                graph=(
+                    graph_context.graph
+                ),
+
+                vulnerabilities=(
+                    graph_context
+                    .vulnerability_records
+                ),
+
+                business_processes=(
+                    business_context
+                    .process_records
+                ),
+
+                dependencies=(
+                    business_context
+                    .dependency_records
+                ),
+
+                controls=(
+                    control_context.records
+                ),
+
+                start_asset_id=(
+                    start_asset.id
+                ),
+
+                start_privilege=(
+                    start_privilege
+                ),
+            )
+        )
+
+
+        comparison = (
+            result.comparison
+        )
+
+
+        applied_controls = [
+            SecurityControlSerializer(
+                control_context
+                .controls_by_id[
+                    control_id
+                ]
+            ).data
+
+            for control_id
+            in control_ids
+        ]
+
+
+        modifications = (
+            result.modifications
+        )
+
+
+        response_data = {
+            "simulation_type":
+                "security_control_comparison",
+
+            "organization":
+                OrganizationSerializer(
+                    organization
+                ).data,
+
+            "start_asset":
+                AssetSerializer(
+                    start_asset
+                ).data,
+
+            "start_privilege":
+                start_privilege,
+
+            "applied_controls":
+                applied_controls,
+
+            "applied_modifications": {
+                "disabled_relationship_ids":
+                    list(
+                        modifications
+                        .disabled_relationship_ids
+                    ),
+
+                "disabled_vulnerability_ids":
+                    list(
+                        modifications
+                        .disabled_vulnerability_ids
+                    ),
+
+                "force_authentication_relationship_ids":
+                    list(
+                        modifications
+                        .force_authentication_relationship_ids
+                    ),
+
+                "force_mfa_relationship_ids":
+                    list(
+                        modifications
+                        .force_mfa_relationship_ids
+                    ),
+
+                "high_privilege_relationship_ids":
+                    list(
+                        modifications
+                        .high_privilege_relationship_ids
+                    ),
+            },
+
+            "baseline":
+                _serialize_counterfactual_run(
+                    comparison.baseline,
+
+                    graph_context,
+
+                    business_context,
+                ),
+
+            "counterfactual":
+                _serialize_counterfactual_run(
+                    comparison
+                    .counterfactual,
+
+                    graph_context,
+
+                    business_context,
+                ),
+
+            "comparison":
+                _serialize_comparison(
+                    comparison,
+
+                    graph_context,
+
+                    business_context,
+                ),
+
+            "semantics": (
+                "Security-control simulation "
+                "compares the current modeled "
+                "baseline with temporary "
+                "defensive-control effects. "
+                "The controls do not modify "
+                "the stored topology, "
+                "vulnerabilities or "
+                "relationships."
+            ),
+        }
+
+
+        return Response(
+            response_data,
+
             status=status.HTTP_200_OK,
         )

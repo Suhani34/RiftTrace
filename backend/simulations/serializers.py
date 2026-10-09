@@ -6,6 +6,7 @@ from assets.models import (
 )
 
 from security.models import (
+    SecurityControl,
     Vulnerability,
 )
 
@@ -359,6 +360,139 @@ class CounterfactualSimulationRequestSerializer(
             "disabled_vulnerability_ids"
         ] = sorted(
             vulnerability_ids
+        )
+
+
+        return attrs
+
+class SecurityControlSimulationRequestSerializer(
+    serializers.Serializer
+):
+    organization = (
+        serializers
+        .PrimaryKeyRelatedField(
+            queryset=(
+                Organization
+                .objects
+                .all()
+            )
+        )
+    )
+
+
+    start_asset = (
+        serializers
+        .PrimaryKeyRelatedField(
+            queryset=(
+                Asset.objects
+                .select_related(
+                    "organization",
+                    "network_zone",
+                )
+            )
+        )
+    )
+
+
+    start_privilege = (
+        serializers.ChoiceField(
+            choices=(
+                "LOW",
+                "HIGH",
+            ),
+
+            default="LOW",
+        )
+    )
+
+
+    control_ids = (
+        serializers.ListField(
+            child=(
+                serializers.IntegerField(
+                    min_value=1
+                )
+            ),
+
+            allow_empty=False,
+        )
+    )
+
+
+    def validate(self, attrs):
+        organization = attrs[
+            "organization"
+        ]
+
+        start_asset = attrs[
+            "start_asset"
+        ]
+
+
+        if (
+            start_asset.organization_id
+            != organization.id
+        ):
+            raise serializers.ValidationError(
+                {
+                    "start_asset": (
+                        "The start asset must "
+                        "belong to the selected "
+                        "organization."
+                    )
+                }
+            )
+
+
+        control_ids = set(
+            attrs[
+                "control_ids"
+            ]
+        )
+
+
+        valid_control_ids = set(
+            SecurityControl.objects.filter(
+                organization=organization,
+
+                id__in=control_ids,
+            ).values_list(
+                "id",
+                flat=True,
+            )
+        )
+
+
+        invalid_control_ids = (
+            control_ids
+            - valid_control_ids
+        )
+
+
+        if invalid_control_ids:
+            raise serializers.ValidationError(
+                {
+                    "control_ids": (
+                        "These controls do not "
+                        "belong to the selected "
+                        "organization: "
+                        + ", ".join(
+                            str(control_id)
+
+                            for control_id
+                            in sorted(
+                                invalid_control_ids
+                            )
+                        )
+                    )
+                }
+            )
+
+
+        attrs[
+            "control_ids"
+        ] = sorted(
+            control_ids
         )
 
 

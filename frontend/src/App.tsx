@@ -17,6 +17,11 @@ import BusinessProcessesPage
   from "./pages/BusinessProcessesPage";
 import CounterfactualPage
   from "./pages/CounterfactualPage";
+import SecurityControlsPage
+  from "./pages/SecurityControlsPage";
+import ControlSimulationPage
+  from "./pages/ControlSimulationPage";
+
 function NotFoundPage() {
   return (
     <section className="panel">
@@ -84,6 +89,22 @@ export default function App() {
 	  path="counterfactual"
 	  element={
 	    <CounterfactualPage />
+	  }
+	/>
+
+	<Route
+	  path="security-controls"
+
+	  element={
+	    <SecurityControlsPage />
+	  }
+	/>
+
+	<Route
+	  path="control-simulation"
+
+	  element={
+	    <ControlSimulationPage />
 	  }
 	/>
 

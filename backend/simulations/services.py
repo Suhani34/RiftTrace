@@ -22,7 +22,12 @@ from organizations.models import (
 )
 
 from security.models import (
+    SecurityControl,
     Vulnerability,
+)
+
+from simulation_engine.control_records import (
+    SecurityControlRecord,
 )
 
 from simulation_engine.graph_builder import (
@@ -83,6 +88,20 @@ class BusinessContext:
 
     dependency_records: tuple[
         BusinessDependencyRecord,
+        ...,
+    ]
+
+@dataclass(
+    slots=True,
+)
+class SecurityControlContext:
+    controls_by_id: dict[
+        int,
+        SecurityControl,
+    ]
+
+    records: tuple[
+        SecurityControlRecord,
         ...,
     ]
 
@@ -228,6 +247,11 @@ def load_organization_graph(
                 vulnerability
                 .is_exploitable
             ),
+
+	    bypasses_mfa=(
+	        vulnerability
+	        .bypasses_mfa
+	    ),
         )
 
         for vulnerability
@@ -364,4 +388,78 @@ def load_business_context(
         dependency_records=(
             dependency_records
         ),
+    )
+
+def load_security_control_context(
+    organization: Organization,
+
+    control_ids: list[int]
+    | tuple[int, ...],
+) -> SecurityControlContext:
+    controls = list(
+        SecurityControl.objects
+        .filter(
+            organization=organization,
+
+            id__in=control_ids,
+        )
+        .select_related(
+            "target_relationship",
+
+            (
+                "target_relationship"
+                "__source"
+            ),
+
+            (
+                "target_relationship"
+                "__target"
+            ),
+
+            "target_vulnerability",
+
+            (
+                "target_vulnerability"
+                "__asset"
+            ),
+        )
+        .order_by("id")
+    )
+
+
+    records = tuple(
+        SecurityControlRecord(
+            id=control.id,
+
+            name=control.name,
+
+            control_type=(
+                control.control_type
+            ),
+
+            target_relationship_id=(
+                control
+                .target_relationship_id
+            ),
+
+            target_vulnerability_id=(
+                control
+                .target_vulnerability_id
+            ),
+        )
+
+        for control
+        in controls
+    )
+
+
+    return SecurityControlContext(
+        controls_by_id={
+            control.id: control
+
+            for control
+            in controls
+        },
+
+        records=records,
     )

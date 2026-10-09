@@ -49,6 +49,8 @@ export interface Vulnerability {
   bypasses_authentication:
     boolean;
 
+  bypasses_mfa: boolean;
+
   is_exploitable: boolean;
 
   description: string;
@@ -77,6 +79,8 @@ export interface CreateVulnerabilityInput {
 
   bypasses_authentication:
     boolean;
+
+  bypasses_mfa: boolean;
 
   is_exploitable: boolean;
 

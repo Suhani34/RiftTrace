@@ -15,6 +15,10 @@ import type {
 } from "../types/counterfactual";
 
 import type {
+  SecurityControlSimulationResult,
+} from "../types/controlSimulation";
+
+import type {
   BusinessImpactSimulationResult,
 } from "../types/businessImpact";
 
@@ -134,6 +138,43 @@ export function runCounterfactualSimulation(
 
         disabled_vulnerability_ids:
           disabledVulnerabilityIds,
+      }),
+    },
+  );
+}
+
+export function runSecurityControlSimulation(
+  organizationId: number,
+
+  startAssetId: number,
+
+  startPrivilege:
+    "LOW"
+    | "HIGH",
+
+  controlIds:
+    number[],
+) {
+  return apiRequest<
+    SecurityControlSimulationResult
+  >(
+    "/simulations/security-controls/",
+
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        organization:
+          organizationId,
+
+        start_asset:
+          startAssetId,
+
+        start_privilege:
+          startPrivilege,
+
+        control_ids:
+          controlIds,
       }),
     },
   );
