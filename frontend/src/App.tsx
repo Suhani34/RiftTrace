@@ -11,6 +11,8 @@ import OrganizationsPage from "./pages/OrganizationsPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
 import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
+import RemediationRankingPage
+  from "./pages/RemediationRankingPage";
 import VulnerabilitiesPage
   from "./pages/VulnerabilitiesPage";
 import BusinessProcessesPage
@@ -59,6 +61,13 @@ export default function App() {
           path="assets"
           element={<AssetsPage />}
         />
+
+	<Route
+	  path="remediation-ranking"
+	  element={
+	    <RemediationRankingPage />
+	  }
+	/>
 
         <Route
           path="relationships"

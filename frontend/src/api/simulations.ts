@@ -15,6 +15,10 @@ import type {
 } from "../types/counterfactual";
 
 import type {
+  ControlRankingResult,
+} from "../types/prioritization";
+
+import type {
   SecurityControlSimulationResult,
 } from "../types/controlSimulation";
 
@@ -159,6 +163,43 @@ export function runSecurityControlSimulation(
     SecurityControlSimulationResult
   >(
     "/simulations/security-controls/",
+
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        organization:
+          organizationId,
+
+        start_asset:
+          startAssetId,
+
+        start_privilege:
+          startPrivilege,
+
+        control_ids:
+          controlIds,
+      }),
+    },
+  );
+}
+
+export function runControlRanking(
+  organizationId: number,
+
+  startAssetId: number,
+
+  startPrivilege:
+    "LOW"
+    | "HIGH",
+
+  controlIds:
+    number[],
+) {
+  return apiRequest<
+    ControlRankingResult
+  >(
+    "/simulations/control-ranking/",
 
     {
       method: "POST",

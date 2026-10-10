@@ -19,6 +19,10 @@ from simulation_engine.business_impact import (
     analyze_business_impact,
 )
 
+from simulation_engine.prioritization import (
+    rank_security_controls,
+)
+
 from simulation_engine.security_controls import (
     analyze_security_controls,
 )
@@ -49,6 +53,7 @@ from .serializers import (
     ReachabilitySimulationRequestSerializer,
     CounterfactualSimulationRequestSerializer,
     SecurityControlSimulationRequestSerializer,
+    SecurityControlRankingRequestSerializer,
 )
 
 from simulation_engine.reachability import (
@@ -67,7 +72,7 @@ def _serialize_counterfactual_run(
     business_context,
 ):
     propagated_assets = [
-        {
+	{
             "asset":
                 AssetSerializer(
                     graph_context
@@ -337,6 +342,89 @@ def _serialize_comparison(
                 .prevented_exploited_vulnerability_ids
             ),
     }
+
+def _build_priority_reason(
+    metrics,
+):
+    reasons = []
+
+
+    if (
+        metrics
+        .critical_process_reduction
+    ):
+        reasons.append(
+            (
+                f"{metrics.critical_process_reduction} "
+                "critical business "
+                "process(es) avoided"
+            )
+        )
+
+
+    if (
+        metrics
+        .critical_asset_reduction
+    ):
+        reasons.append(
+            (
+                f"{metrics.critical_asset_reduction} "
+                "critical asset(s) "
+                "prevented"
+            )
+        )
+
+
+    if (
+        metrics
+        .essential_dependency_hit_reduction
+    ):
+        reasons.append(
+            (
+                f"{metrics.essential_dependency_hit_reduction} "
+                "essential dependency "
+                "hit(s) prevented"
+            )
+        )
+
+
+    if (
+        metrics
+        .impacted_process_reduction
+    ):
+        reasons.append(
+            (
+                f"{metrics.impacted_process_reduction} "
+                "business process(es) "
+                "avoided"
+            )
+        )
+
+
+    if (
+        metrics
+        .propagated_asset_reduction
+    ):
+        reasons.append(
+            (
+                f"{metrics.propagated_asset_reduction} "
+                "propagated asset(s) "
+                "prevented"
+            )
+        )
+
+
+    if not reasons:
+        return (
+            "No measured consequence "
+            "reduction for this modeled "
+            "scenario."
+        )
+
+
+    return "; ".join(
+        reasons
+    ) + "."
 
 class ReachabilitySimulationView(
     APIView
@@ -1618,6 +1706,329 @@ class SecurityControlSimulationView(
                 "the stored topology, "
                 "vulnerabilities or "
                 "relationships."
+            ),
+        }
+
+
+        return Response(
+            response_data,
+
+            status=status.HTTP_200_OK,
+        )
+class SecurityControlRankingView(
+    APIView
+):
+    def post(self, request):
+        serializer = (
+            SecurityControlRankingRequestSerializer(
+                data=request.data
+            )
+        )
+
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+
+        organization = (
+            serializer.validated_data[
+                "organization"
+            ]
+        )
+
+
+        start_asset = (
+            serializer.validated_data[
+                "start_asset"
+            ]
+        )
+
+
+        start_privilege = (
+            serializer.validated_data[
+                "start_privilege"
+            ]
+        )
+
+
+        control_ids = (
+            serializer.validated_data[
+                "control_ids"
+            ]
+        )
+
+
+        graph_context = (
+            load_organization_graph(
+                organization
+            )
+        )
+
+
+        business_context = (
+            load_business_context(
+                organization
+            )
+        )
+
+
+        control_context = (
+            load_security_control_context(
+                organization,
+
+                control_ids,
+            )
+        )
+
+
+        ranking_result = (
+            rank_security_controls(
+                graph=(
+                    graph_context.graph
+                ),
+
+                vulnerabilities=(
+                    graph_context
+                    .vulnerability_records
+                ),
+
+                business_processes=(
+                    business_context
+                    .process_records
+                ),
+
+                dependencies=(
+                    business_context
+                    .dependency_records
+                ),
+
+                controls=(
+                    control_context.records
+                ),
+
+                start_asset_id=(
+                    start_asset.id
+                ),
+
+                start_privilege=(
+                    start_privilege
+                ),
+            )
+        )
+
+
+        rank_counts = {}
+
+
+        for ranked in (
+            ranking_result
+            .ranked_controls
+        ):
+            rank_counts[
+                ranked.priority_rank
+            ] = (
+                rank_counts.get(
+                    ranked.priority_rank,
+                    0,
+                )
+                + 1
+            )
+
+
+        ranked_controls = []
+
+
+        for ranked in (
+            ranking_result
+            .ranked_controls
+        ):
+            control = (
+                control_context
+                .controls_by_id[
+                    ranked.control_id
+                ]
+            )
+
+
+            comparison = (
+                ranked.comparison
+            )
+
+
+            ranked_controls.append(
+                {
+                    "rank":
+                        ranked
+                        .priority_rank,
+
+                    "tied":
+                        rank_counts[
+                            ranked
+                            .priority_rank
+                        ]
+                        > 1,
+
+                    "has_measured_effect":
+                        ranked
+                        .has_measured_effect,
+
+                    "control":
+                        SecurityControlSerializer(
+                            control
+                        ).data,
+
+                    "metrics": {
+                        "critical_process_reduction":
+                            ranked
+                            .metrics
+                            .critical_process_reduction,
+
+                        "critical_asset_reduction":
+                            ranked
+                            .metrics
+                            .critical_asset_reduction,
+
+                        "essential_dependency_hit_reduction":
+                            ranked
+                            .metrics
+                            .essential_dependency_hit_reduction,
+
+                        "impacted_process_reduction":
+                            ranked
+                            .metrics
+                            .impacted_process_reduction,
+
+                        "propagated_asset_reduction":
+                            ranked
+                            .metrics
+                            .propagated_asset_reduction,
+                    },
+
+                    "priority_reason":
+                        _build_priority_reason(
+                            ranked.metrics
+                        ),
+
+                    "controlled_scenario":
+                        _serialize_counterfactual_run(
+                            comparison
+                            .counterfactual,
+
+                            graph_context,
+
+                            business_context,
+                        ),
+
+                    "comparison":
+                        _serialize_comparison(
+                            comparison,
+
+                            graph_context,
+
+                            business_context,
+                        ),
+                }
+            )
+
+
+        first_comparison = (
+            ranking_result
+            .ranked_controls[
+                0
+            ]
+            .comparison
+        )
+
+
+        response_data = {
+            "simulation_type":
+                "security_control_ranking",
+
+            "organization":
+                OrganizationSerializer(
+                    organization
+                ).data,
+
+            "start_asset":
+                AssetSerializer(
+                    start_asset
+                ).data,
+
+            "start_privilege":
+                start_privilege,
+
+            "candidate_control_count":
+                len(
+                    ranked_controls
+                ),
+
+            "ranking_method": {
+                "strategy":
+                    (
+                        "Business-first "
+                        "lexicographic ranking"
+                    ),
+
+                "priority_order": [
+                    (
+                        "Critical business "
+                        "process reduction"
+                    ),
+
+                    (
+                        "Critical asset "
+                        "reduction"
+                    ),
+
+                    (
+                        "Essential dependency "
+                        "hit reduction"
+                    ),
+
+                    (
+                        "Total impacted "
+                        "business process "
+                        "reduction"
+                    ),
+
+                    (
+                        "Total propagated "
+                        "asset reduction"
+                    ),
+                ],
+
+                "tie_behavior":
+                    (
+                        "Controls with identical "
+                        "reduction metrics receive "
+                        "the same rank."
+                    ),
+            },
+
+            "baseline":
+                _serialize_counterfactual_run(
+                    first_comparison
+                    .baseline,
+
+                    graph_context,
+
+                    business_context,
+                ),
+
+            "ranked_controls":
+                ranked_controls,
+
+            "semantics": (
+                "Candidate controls are ranked "
+                "by measured consequence "
+                "reduction in this specific "
+                "modeled attack scenario. "
+                "The ranking is not a universal "
+                "security rating and does not "
+                "include implementation cost, "
+                "operational complexity or "
+                "real-world exploit probability."
             ),
         }
 

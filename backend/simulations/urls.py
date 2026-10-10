@@ -6,6 +6,7 @@ from .views import (
     ReachabilitySimulationView,
     CounterfactualSimulationView,
     SecurityControlSimulationView,
+    SecurityControlRankingView,
 )
 
 
@@ -35,6 +36,13 @@ urlpatterns = [
         SecurityControlSimulationView.as_view(),
         name=(
             "simulation-security-controls"
+        ),
+    ),
+    path(
+        "control-ranking/",
+        SecurityControlRankingView.as_view(),
+        name=(
+            "simulation-control-ranking"
         ),
     ),
 ]

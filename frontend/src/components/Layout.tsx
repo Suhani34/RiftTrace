@@ -54,13 +54,16 @@ export default function Layout() {
           Business Processes
         </NavLink>
 
-
 	<NavLink to="/counterfactual">
 	  Counterfactual
 	</NavLink>
 
 	<NavLink to="/control-simulation">
 	  Control Simulation
+	</NavLink>
+
+	<NavLink to="/remediation-ranking">
+	  Remediation Ranking
 	</NavLink>
 
       </nav>
