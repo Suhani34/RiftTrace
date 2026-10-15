@@ -3,14 +3,34 @@ import {
   useState,
 } from "react";
 
-import { listAssets } from "../api/assets";
-import { listOrganizations } from "../api/organizations";
-import { listRelationships } from "../api/relationships";
+import {
+  Link,
+} from "react-router-dom";
+
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+import {
+  getDashboardSummary,
+} from "../api/dashboard";
+
+import {
+  listOrganizations,
+} from "../api/organizations";
 
 import type {
-  Asset,
+  DashboardSummary,
+} from "../types/dashboard";
+
+import type {
   Organization,
-  Relationship,
 } from "../types/models";
 
 
@@ -20,20 +40,21 @@ export default function DashboardPage() {
     setOrganizations,
   ] = useState<Organization[]>([]);
 
-  const [
-    assets,
-    setAssets,
-  ] = useState<Asset[]>([]);
 
   const [
-    relationships,
-    setRelationships,
-  ] = useState<Relationship[]>([]);
+    selectedOrganization,
+    setSelectedOrganization,
+  ] = useState("");
+
 
   const [
-    loading,
-    setLoading,
-  ] = useState(true);
+    summary,
+    setSummary,
+  ] = useState<
+    DashboardSummary
+    | null
+  >(null);
+
 
   const [
     error,
@@ -41,149 +62,436 @@ export default function DashboardPage() {
   ] = useState("");
 
 
-  useEffect(() => {
-    async function loadDashboard() {
-      try {
-        const [
-          organizationData,
-          assetData,
-          relationshipData,
-        ] = await Promise.all([
-          listOrganizations(),
-          listAssets(),
-          listRelationships(),
-        ]);
-
-        setOrganizations(
-          organizationData,
-        );
-
-        setAssets(
-          assetData,
-        );
-
-        setRelationships(
-          relationshipData,
-        );
-      } catch {
-        setError(
-          "Unable to load RiftTrace data.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadDashboard();
-  }, []);
+  async function loadSummary(
+    organizationId: number,
+  ) {
+    const data =
+      await getDashboardSummary(
+        organizationId
+      );
 
 
-  if (loading) {
-    return <p>Loading dashboard...</p>;
-  }
-
-
-  if (error) {
-    return (
-      <div className="error-box">
-        {error}
-      </div>
+    setSummary(
+      data
     );
   }
 
 
-  const criticalAssets = assets.filter(
-    (asset) =>
-      asset.criticality === "CRITICAL",
-  );
+  useEffect(() => {
+    let cancelled = false;
 
-  const exposedAssets = assets.filter(
-    (asset) =>
-      asset.is_internet_exposed,
-  );
+
+    async function initialize() {
+      try {
+        const organizationData =
+          await listOrganizations();
+
+
+        if (cancelled) {
+          return;
+        }
+
+
+        setOrganizations(
+          organizationData
+        );
+
+
+        if (
+          organizationData.length
+          === 0
+        ) {
+          return;
+        }
+
+
+        const initial =
+          organizationData.find(
+            (organization) =>
+              organization.name
+              === "RiftTrace Labs",
+          )
+          ?? organizationData[0];
+
+
+        setSelectedOrganization(
+          String(
+            initial.id
+          )
+        );
+
+
+        const dashboardData =
+          await getDashboardSummary(
+            initial.id
+          );
+
+
+        if (!cancelled) {
+          setSummary(
+            dashboardData
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          setError(
+            "Unable to load dashboard.",
+          );
+        }
+      }
+    }
+
+
+    void initialize();
+
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+
+  async function handleOrganizationChange(
+    value: string,
+  ) {
+    setSelectedOrganization(
+      value
+    );
+
+    setSummary(null);
+
+    setError("");
+
+
+    if (!value) {
+      return;
+    }
+
+
+    try {
+      await loadSummary(
+        Number(value)
+      );
+    } catch {
+      setError(
+        "Unable to load selected "
+        + "organization dashboard.",
+      );
+    }
+  }
 
 
   return (
     <>
       <div className="page-heading">
         <div>
-          <h2>Dashboard</h2>
+          <h2>
+            RiftTrace Dashboard
+          </h2>
 
           <p>
-            Current RiftTrace environment overview.
+            Organization-wide view of the
+            modeled cyber environment,
+            business dependencies and
+            candidate defensive controls.
           </p>
         </div>
       </div>
 
-      <section className="metric-grid">
-        <article className="metric-card">
-          <span>Organizations</span>
-          <strong>
-            {organizations.length}
-          </strong>
-        </article>
 
-        <article className="metric-card">
-          <span>Assets</span>
-          <strong>
-            {assets.length}
-          </strong>
-        </article>
+      {error && (
+        <div className="error-box">
+          {error}
+        </div>
+      )}
 
-        <article className="metric-card">
-          <span>Relationships</span>
-          <strong>
-            {relationships.length}
-          </strong>
-        </article>
-
-        <article className="metric-card">
-          <span>Critical Assets</span>
-          <strong>
-            {criticalAssets.length}
-          </strong>
-        </article>
-
-        <article className="metric-card">
-          <span>Internet Exposed</span>
-          <strong>
-            {exposedAssets.length}
-          </strong>
-        </article>
-      </section>
 
       <section className="panel">
-        <h3>Critical Assets</h3>
+        <label>
+          Organization
 
-        {criticalAssets.length === 0 ? (
-          <p>
-            No critical assets are currently defined.
-          </p>
-        ) : (
-          <div className="card-list">
-            {criticalAssets.map(
-              (asset) => (
-                <article
-                  className="simple-card"
-                  key={asset.id}
+          <select
+            value={
+              selectedOrganization
+            }
+
+            onChange={(event) =>
+              void handleOrganizationChange(
+                event.target.value
+              )
+            }
+          >
+            {organizations.map(
+              (organization) => (
+                <option
+                  key={
+                    organization.id
+                  }
+
+                  value={
+                    organization.id
+                  }
                 >
-                  <strong>
-                    {asset.name}
-                  </strong>
-
-                  <span>
-                    {asset.organization_name}
-                  </span>
-
-                  <span>
-                    {asset.asset_type_display}
-                  </span>
-                </article>
+                  {
+                    organization.name
+                  }
+                </option>
               ),
             )}
-          </div>
-        )}
+          </select>
+        </label>
       </section>
+
+
+      {!summary ? (
+        <section className="panel">
+          <p>
+            Select an organization to load
+            the dashboard.
+          </p>
+        </section>
+      ) : (
+        <>
+          <section className="dashboard-stat-grid">
+            <article className="dashboard-stat-card">
+              <span>
+                Assets
+              </span>
+
+              <strong>
+                {
+                  summary
+                    .totals
+                    .assets
+                }
+              </strong>
+            </article>
+
+
+            <article className="dashboard-stat-card">
+              <span>
+                Relationships
+              </span>
+
+              <strong>
+                {
+                  summary
+                    .totals
+                    .relationships
+                }
+              </strong>
+            </article>
+
+
+            <article className="dashboard-stat-card">
+              <span>
+                Vulnerabilities
+              </span>
+
+              <strong>
+                {
+                  summary
+                    .totals
+                    .vulnerabilities
+                }
+              </strong>
+
+              <small>
+                {
+                  summary
+                    .totals
+                    .exploitable_vulnerabilities
+                }
+                {" exploitable"}
+              </small>
+            </article>
+
+
+            <article className="dashboard-stat-card">
+              <span>
+                Business Processes
+              </span>
+
+              <strong>
+                {
+                  summary
+                    .totals
+                    .business_processes
+                }
+              </strong>
+            </article>
+
+
+            <article className="dashboard-stat-card">
+              <span>
+                Security Controls
+              </span>
+
+              <strong>
+                {
+                  summary
+                    .totals
+                    .security_controls
+                }
+              </strong>
+            </article>
+
+
+            <article className="dashboard-stat-card">
+              <span>
+                Network Zones
+              </span>
+
+              <strong>
+                {
+                  summary
+                    .totals
+                    .network_zones
+                }
+              </strong>
+            </article>
+          </section>
+
+
+          <section className="dashboard-chart-grid">
+            <article className="panel dashboard-chart-card">
+              <h3>
+                Asset Criticality
+              </h3>
+
+              <ResponsiveContainer
+                width="100%"
+                height={280}
+              >
+                <BarChart
+                  data={
+                    summary
+                      .asset_criticality
+                  }
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                  />
+
+                  <XAxis
+                    dataKey="name"
+                  />
+
+                  <YAxis
+                    allowDecimals={
+                      false
+                    }
+                  />
+
+                  <Tooltip />
+
+                  <Bar
+                    dataKey="value"
+                    fill="#7c3aed"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </article>
+
+
+            <article className="panel dashboard-chart-card">
+              <h3>
+                Business Process Criticality
+              </h3>
+
+              <ResponsiveContainer
+                width="100%"
+                height={280}
+              >
+                <BarChart
+                  data={
+                    summary
+                      .business_process_criticality
+                  }
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                  />
+
+                  <XAxis
+                    dataKey="name"
+                  />
+
+                  <YAxis
+                    allowDecimals={
+                      false
+                    }
+                  />
+
+                  <Tooltip />
+
+                  <Bar
+                    dataKey="value"
+                    fill="#2563eb"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </article>
+          </section>
+
+
+          <section className="panel">
+            <h3>
+              RiftTrace Workflow
+            </h3>
+
+            <div className="dashboard-workflow-grid">
+              <Link to="/topology">
+                <strong>
+                  1. Analyze Propagation
+                </strong>
+
+                <span>
+                  Topology, security-aware
+                  propagation and business
+                  impact.
+                </span>
+              </Link>
+
+
+              <Link to="/counterfactual">
+                <strong>
+                  2. Test What-If Changes
+                </strong>
+
+                <span>
+                  Compare the current model
+                  against temporary changes.
+                </span>
+              </Link>
+
+
+              <Link to="/control-simulation">
+                <strong>
+                  3. Simulate Controls
+                </strong>
+
+                <span>
+                  Apply modeled defensive
+                  controls.
+                </span>
+              </Link>
+
+
+              <Link to="/remediation-ranking">
+                <strong>
+                  4. Prioritize Fixes
+                </strong>
+
+                <span>
+                  Rank controls by modeled
+                  consequence reduction.
+                </span>
+              </Link>
+            </div>
+          </section>
+        </>
+      )}
     </>
   );
 }

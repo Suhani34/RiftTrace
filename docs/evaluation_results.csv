@@ -1,0 +1,26 @@
+scenario_start_asset,start_privilege,rank,control_name,control_type,has_measured_effect,critical_process_reduction,critical_asset_reduction,essential_dependency_hit_reduction,impacted_process_reduction,propagated_asset_reduction
+Public Web App,LOW,1,Segment Web from Internal API,NETWORK_SEGMENTATION,True,0,1,2,1,2
+Public Web App,LOW,1,Patch Internal API Weakness,VULNERABILITY_REMEDIATION,True,0,1,2,1,2
+Public Web App,LOW,2,Require MFA for VPN Admin Access,MFA,False,0,0,0,0,0
+Public Web App,LOW,2,Apply Least Privilege to Admin DC Access,LEAST_PRIVILEGE,False,0,0,0,0,0
+Public Web App,LOW,2,Enforce Authentication for Database Access,AUTHENTICATION_ENFORCEMENT,False,0,0,0,0,0
+VPN Gateway,LOW,1,Require MFA for VPN Admin Access,MFA,True,0,1,2,1,3
+VPN Gateway,LOW,2,Segment Web from Internal API,NETWORK_SEGMENTATION,False,0,0,0,0,0
+VPN Gateway,LOW,2,Patch Internal API Weakness,VULNERABILITY_REMEDIATION,False,0,0,0,0,0
+VPN Gateway,LOW,2,Apply Least Privilege to Admin DC Access,LEAST_PRIVILEGE,False,0,0,0,0,0
+VPN Gateway,LOW,2,Enforce Authentication for Database Access,AUTHENTICATION_ENFORCEMENT,False,0,0,0,0,0
+Admin Workstation,LOW,1,Segment Web from Internal API,NETWORK_SEGMENTATION,False,0,0,0,0,0
+Admin Workstation,LOW,1,Patch Internal API Weakness,VULNERABILITY_REMEDIATION,False,0,0,0,0,0
+Admin Workstation,LOW,1,Require MFA for VPN Admin Access,MFA,False,0,0,0,0,0
+Admin Workstation,LOW,1,Apply Least Privilege to Admin DC Access,LEAST_PRIVILEGE,False,0,0,0,0,0
+Admin Workstation,LOW,1,Enforce Authentication for Database Access,AUTHENTICATION_ENFORCEMENT,False,0,0,0,0,0
+CI/CD Server,LOW,1,Segment Web from Internal API,NETWORK_SEGMENTATION,True,0,1,2,1,2
+CI/CD Server,LOW,1,Patch Internal API Weakness,VULNERABILITY_REMEDIATION,True,0,1,2,1,2
+CI/CD Server,LOW,2,Require MFA for VPN Admin Access,MFA,False,0,0,0,0,0
+CI/CD Server,LOW,2,Apply Least Privilege to Admin DC Access,LEAST_PRIVILEGE,False,0,0,0,0,0
+CI/CD Server,LOW,2,Enforce Authentication for Database Access,AUTHENTICATION_ENFORCEMENT,False,0,0,0,0,0
+Internal API,LOW,1,Segment Web from Internal API,NETWORK_SEGMENTATION,False,0,0,0,0,0
+Internal API,LOW,1,Patch Internal API Weakness,VULNERABILITY_REMEDIATION,False,0,0,0,0,0
+Internal API,LOW,1,Require MFA for VPN Admin Access,MFA,False,0,0,0,0,0
+Internal API,LOW,1,Apply Least Privilege to Admin DC Access,LEAST_PRIVILEGE,False,0,0,0,0,0
+Internal API,LOW,1,Enforce Authentication for Database Access,AUTHENTICATION_ENFORCEMENT,False,0,0,0,0,0

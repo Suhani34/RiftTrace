@@ -9,6 +9,9 @@ from assets.views import (
     NetworkZoneViewSet,
     RelationshipViewSet,
 )
+from .dashboard import (
+    DashboardSummaryView,
+)
 from business.views import (
     BusinessProcessDependencyViewSet,
     BusinessProcessViewSet,
@@ -73,4 +76,8 @@ urlpatterns = [
     path("", include("core.urls")),
     path("", include(router.urls)),
     path("simulations/", include("simulations.urls")),
+path(
+    "dashboard/summary/",
+    DashboardSummaryView.as_view(),
+    name="dashboard-summary",),
 ]

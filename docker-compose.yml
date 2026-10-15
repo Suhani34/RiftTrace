@@ -1,0 +1,78 @@
+services:
+
+  db:
+    image: postgres:17
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER} -d ${DB_NAME}"
+        ]
+
+      interval: 5s
+
+      timeout: 5s
+
+      retries: 10
+
+
+
+  backend:
+    build:
+      context: ./backend
+
+    restart: unless-stopped
+
+    env_file:
+      - .env.docker
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      gunicorn
+      config.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 3
+      --timeout 120
+      "
+
+
+
+  frontend:
+    build:
+      context: ./frontend
+
+      args:
+        VITE_API_BASE_URL:
+          ${VITE_API_BASE_URL}
+
+    restart: unless-stopped
+
+    ports:
+      - "8081:80"
+
+    depends_on:
+      - backend
+
+
+
+volumes:
+  postgres_data:

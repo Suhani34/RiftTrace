@@ -22,24 +22,37 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
-}
+    "rifttrace-development-key",
+)
+
+DEBUG = (
+    os.getenv(
+        "DJANGO_DEBUG",
+        "True",
+    )
+    .lower()
+    == "true"
+)
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get(
+
+    for host
+    in os.getenv(
         "DJANGO_ALLOWED_HOSTS",
-        "127.0.0.1,localhost",
+
+        (
+            "localhost,"
+            "127.0.0.1,"
+            "backend"
+        ),
     ).split(",")
+
     if host.strip()
 ]
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -94,16 +107,41 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+    "default": {
+        "ENGINE":
+            "django.db.backends.postgresql",
+
+        "NAME":
+            os.getenv(
+                "DB_NAME",
+                "rifttrace_db",
+            ),
+
+        "USER":
+            os.getenv(
+                "DB_USER",
+                "rifttrace_user",
+            ),
+
+        "PASSWORD":
+            os.getenv(
+                "DB_PASSWORD",
+                "",
+            ),
+
+        "HOST":
+            os.getenv(
+                "DB_HOST",
+                "localhost",
+            ),
+
+        "PORT":
+            os.getenv(
+                "DB_PORT",
+                "5432",
+            ),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -148,9 +186,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
-    for origin in os.environ.get(
+
+    for origin
+    in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
+
+        (
+            "http://localhost:5173,"
+            "http://127.0.0.1:5173,"
+            "http://localhost:8080"
+        ),
     ).split(",")
+
     if origin.strip()
 ]
