@@ -1,0 +1,4 @@
+name,zone_type
+CSV DMZ,DMZ
+CSV Internal,INTERNAL
+CSV Restricted,RESTRICTED

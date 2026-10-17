@@ -1,0 +1,3 @@
+asset,reference_id,title,cvss_score,attack_vector,privileges_required,grants_privilege,bypasses_authentication,bypasses_mfa,is_exploitable,description
+CSV API,CVE-DEMO-CSV-01,CSV API weakness,8.5,NETWORK,NONE,LOW,true,false,true,Synthetic CSV weakness
+CSV Database,CVE-DEMO-CSV-02,CSV database weakness,9.0,NETWORK,NONE,LOW,true,false,true,Synthetic CSV database weakness

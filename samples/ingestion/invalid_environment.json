@@ -1,0 +1,26 @@
+{
+  "assets": [
+    {
+      "name": "Broken Web",
+      "asset_type": "APPLICATION",
+      "criticality": "HIGH",
+      "environment": "PRODUCTION",
+      "network_zone": null,
+      "hostname": "broken-web",
+      "ip_address": "10.70.1.10",
+      "is_internet_exposed": true
+    }
+  ],
+
+  "relationships": [
+    {
+      "source": "Broken Web",
+      "target": "Asset That Does Not Exist",
+      "relationship_type": "CALLS",
+      "protocol": "HTTPS",
+      "port": 443,
+      "requires_authentication": false,
+      "required_source_privilege": "LOW"
+    }
+  ]
+}

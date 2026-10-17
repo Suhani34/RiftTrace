@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'core.apps.CoreConfig',
+    'ingestion',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',
     'business.apps.BusinessConfig',

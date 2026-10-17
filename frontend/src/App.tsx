@@ -15,6 +15,8 @@ import RemediationRankingPage
   from "./pages/RemediationRankingPage";
 import VulnerabilitiesPage
   from "./pages/VulnerabilitiesPage";
+import IngestionPage
+  from "./pages/IngestionPage";
 import BusinessProcessesPage
   from "./pages/BusinessProcessesPage";
 import CounterfactualPage
@@ -73,6 +75,13 @@ export default function App() {
           path="relationships"
           element={<RelationshipsPage />}
         />
+
+	<Route
+	  path="ingestion"
+	  element={
+	    <IngestionPage />
+	  }
+	/>
 
 	<Route
 	  path="vulnerabilities"

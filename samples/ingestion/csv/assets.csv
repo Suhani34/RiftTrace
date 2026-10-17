@@ -1,0 +1,4 @@
+name,asset_type,criticality,environment,network_zone,hostname,ip_address,is_internet_exposed
+CSV Web,APPLICATION,HIGH,PRODUCTION,CSV DMZ,csv-web,10.60.1.10,true
+CSV API,API,HIGH,PRODUCTION,CSV Internal,csv-api,10.60.2.10,false
+CSV Database,DATABASE,CRITICAL,PRODUCTION,CSV Restricted,csv-db,10.60.3.10,false

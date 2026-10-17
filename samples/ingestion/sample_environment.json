@@ -1,0 +1,99 @@
+{
+  "network_zones": [
+    {
+      "name": "Import DMZ",
+      "zone_type": "DMZ"
+    },
+    {
+      "name": "Import Internal",
+      "zone_type": "INTERNAL"
+    },
+    {
+      "name": "Import Restricted",
+      "zone_type": "RESTRICTED"
+    }
+  ],
+
+  "assets": [
+    {
+      "name": "Imported Web",
+      "asset_type": "APPLICATION",
+      "criticality": "HIGH",
+      "environment": "PRODUCTION",
+      "network_zone": "Import DMZ",
+      "hostname": "import-web",
+      "ip_address": "10.50.1.10",
+      "is_internet_exposed": true
+    },
+    {
+      "name": "Imported API",
+      "asset_type": "API",
+      "criticality": "CRITICAL",
+      "environment": "PRODUCTION",
+      "network_zone": "Import Internal",
+      "hostname": "import-api",
+      "ip_address": "10.50.2.10",
+      "is_internet_exposed": false
+    },
+    {
+      "name": "Imported Database",
+      "asset_type": "DATABASE",
+      "criticality": "CRITICAL",
+      "environment": "PRODUCTION",
+      "network_zone": "Import Restricted",
+      "hostname": "import-db",
+      "ip_address": "10.50.3.10",
+      "is_internet_exposed": false
+    }
+  ],
+
+  "relationships": [
+    {
+      "source": "Imported Web",
+      "target": "Imported API",
+      "relationship_type": "CALLS",
+      "protocol": "HTTPS",
+      "port": 443,
+      "requires_authentication": true,
+      "required_source_privilege": "LOW"
+    },
+    {
+      "source": "Imported API",
+      "target": "Imported Database",
+      "relationship_type": "READS",
+      "protocol": "TCP",
+      "port": 5432,
+      "requires_authentication": true,
+      "required_source_privilege": "LOW"
+    }
+  ],
+
+  "vulnerabilities": [
+    {
+      "asset": "Imported API",
+      "reference_id": "CVE-DEMO-1401",
+      "title": "Imported API weakness",
+      "cvss_score": 8.8,
+      "attack_vector": "NETWORK",
+      "privileges_required": "NONE",
+      "grants_privilege": "LOW",
+      "bypasses_authentication": true,
+      "bypasses_mfa": false,
+      "is_exploitable": true,
+      "description": "Synthetic Phase 14 vulnerability."
+    },
+    {
+      "asset": "Imported Database",
+      "reference_id": "CVE-DEMO-1402",
+      "title": "Imported database weakness",
+      "cvss_score": 9.1,
+      "attack_vector": "NETWORK",
+      "privileges_required": "NONE",
+      "grants_privilege": "LOW",
+      "bypasses_authentication": true,
+      "bypasses_mfa": false,
+      "is_exploitable": true,
+      "description": "Synthetic Phase 14 database weakness."
+    }
+  ]
+}

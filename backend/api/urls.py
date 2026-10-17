@@ -76,8 +76,12 @@ urlpatterns = [
     path("", include("core.urls")),
     path("", include(router.urls)),
     path("simulations/", include("simulations.urls")),
-path(
-    "dashboard/summary/",
-    DashboardSummaryView.as_view(),
-    name="dashboard-summary",),
+    path(
+        "dashboard/summary/",
+        DashboardSummaryView.as_view(),
+        name="dashboard-summary",),
+    path(
+        "ingestion/",
+        include("ingestion.urls"),
+    ),
 ]

@@ -83,3 +83,25 @@ vulnerability copies.
 
 The PostgreSQL environment model is not changed by
 simulation.
+
+## Environment Ingestion
+
+External technical environment data is normalized before
+being written to RiftTrace's persistence layer.
+
+The ingestion pipeline is:
+
+Source File
+→ Parser
+→ Normalized Ingestion Records
+→ Validation/Preview
+→ Atomic Application
+→ RiftTrace Domain Models
+
+JSON and CSV use the same normalized ingestion records and
+application engine.
+
+A failed validation does not modify the environment.
+
+Applied imports are recorded through `IngestionRun`, but raw
+uploaded files are not stored.

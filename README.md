@@ -59,6 +59,12 @@ Deployment:
 - Counterfactual simulation
 - Security-control simulation
 - Business-aware remediation ranking
+- JSON environment ingestion
+- CSV environment ingestion
+- Pre-import validation and preview
+- Atomic environment imports
+- Repeatable/idempotent imports
+- Import history
 
 ## Simulation Semantics
 
@@ -76,6 +82,18 @@ Django handles persistence, API validation and orchestration.
 The `simulation_engine` package contains the pure graph,
 propagation, business-impact, counterfactual, control and
 prioritization algorithms.
+
+External data
+    ↓
+Ingestion parser
+    ↓
+Normalized records
+    ↓
+Validation planner
+    ↓
+Atomic application
+    ↓
+RiftTrace model
 
 ## Local Development
 

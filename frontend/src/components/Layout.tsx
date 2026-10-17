@@ -22,6 +22,10 @@ export default function Layout() {
           Dashboard
         </NavLink>
 
+	<NavLink to="/ingestion">
+	  Environment Ingestion
+	</NavLink>
+
         <NavLink to="/organizations">
           Organizations
         </NavLink>

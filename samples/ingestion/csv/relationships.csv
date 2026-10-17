@@ -1,0 +1,3 @@
+source,target,relationship_type,protocol,port,requires_authentication,required_source_privilege
+CSV Web,CSV API,CALLS,HTTPS,443,true,LOW
+CSV API,CSV Database,READS,TCP,5432,true,LOW
