@@ -53,7 +53,13 @@ export default function Layout() {
         <NavLink to="/topology">
           Topology
         </NavLink>
+	<NavLink to="/identity-graph">
+	  Identity Graph
+	</NavLink>
 
+	<NavLink to="/identity-propagation">
+	  Identity Propagation
+	</NavLink>
         <NavLink to="/business-processes">
           Business Processes
         </NavLink>

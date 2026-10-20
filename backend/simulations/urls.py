@@ -7,6 +7,7 @@ from .views import (
     CounterfactualSimulationView,
     SecurityControlSimulationView,
     SecurityControlRankingView,
+    IdentityPropagationView,
 )
 
 
@@ -44,6 +45,11 @@ urlpatterns = [
         name=(
             "simulation-control-ranking"
         ),
+    ),
+    path(
+        "identity-propagation/",
+        IdentityPropagationView.as_view(),
+        name="identity-propagation",
     ),
 ]
 

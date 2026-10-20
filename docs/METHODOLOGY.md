@@ -67,8 +67,28 @@ Ranking uses business-first lexicographic ordering:
 5. Total propagated assets prevented
 
 No arbitrary weighted risk score is used.
+## 8. Identity-aware Propogation
 
-## 8. Interpretation
+Identity-aware propagation is deterministic and
+model-driven.
+
+A compromised asset may expose a modeled credential.
+
+A credential can make an identity available.
+
+An acquired identity can traverse identity relationships
+such as ASSUMES_ROLE or MEMBER_OF.
+
+An identity can reach an asset through an enabled access
+rule.
+
+MFA-required transitions are blocked unless the modeled
+credential/session satisfies MFA.
+
+These results indicate potential access under the supplied
+model and do not represent observed attacker behavior.
+
+## 9. Interpretation
 
 Results are deterministic consequences of the supplied model.
 

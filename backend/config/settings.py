@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core.apps.CoreConfig',
     'ingestion',
+    'identities',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',
     'business.apps.BusinessConfig',

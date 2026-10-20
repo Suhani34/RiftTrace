@@ -11,6 +11,11 @@ import OrganizationsPage from "./pages/OrganizationsPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
 import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
+import IdentityGraphPage
+  from "./pages/IdentityGraphPage";
+
+import IdentityPropagationPage
+  from "./pages/IdentityPropagationPage";
 import RemediationRankingPage
   from "./pages/RemediationRankingPage";
 import VulnerabilitiesPage
@@ -63,7 +68,19 @@ export default function App() {
           path="assets"
           element={<AssetsPage />}
         />
+	<Route
+	  path="identity-graph"
+	  element={
+	    <IdentityGraphPage />
+	  }
+	/>
 
+	<Route
+	  path="identity-propagation"
+	  element={
+	    <IdentityPropagationPage />
+	  }
+	/>
 	<Route
 	  path="remediation-ranking"
 	  element={

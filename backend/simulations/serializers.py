@@ -672,3 +672,110 @@ class SecurityControlRankingRequestSerializer(
 
 
         return attrs
+
+class IdentityCompromisedAssetSerializer(
+    serializers.Serializer
+):
+    asset_id = (
+        serializers.IntegerField()
+    )
+
+
+    privilege = (
+        serializers.ChoiceField(
+            choices=(
+                "LOW",
+                "HIGH",
+            ),
+
+            default="LOW",
+        )
+    )
+
+
+class IdentityPropagationRequestSerializer(
+    serializers.Serializer
+):
+    organization = (
+        serializers.PrimaryKeyRelatedField(
+            queryset=(
+                Organization.objects.all()
+            )
+        )
+    )
+
+
+    compromised_assets = (
+        IdentityCompromisedAssetSerializer(
+            many=True,
+
+            allow_empty=False,
+        )
+    )
+
+
+    def validate(self, attrs):
+        organization = attrs[
+            "organization"
+        ]
+
+
+        compromised_assets = attrs[
+            "compromised_assets"
+        ]
+
+
+        ids = [
+            item[
+                "asset_id"
+            ]
+
+            for item
+            in compromised_assets
+        ]
+
+
+        if (
+            len(ids)
+            != len(set(ids))
+        ):
+            raise serializers.ValidationError(
+                (
+                    "Each compromised asset "
+                    "may appear only once."
+                )
+            )
+
+
+        valid_ids = set(
+            Asset.objects.filter(
+                organization=organization,
+
+                id__in=ids,
+            ).values_list(
+                "id",
+                flat=True,
+            )
+        )
+
+
+        missing_ids = (
+            set(ids)
+            - valid_ids
+        )
+
+
+        if missing_ids:
+            raise serializers.ValidationError(
+                {
+                    "compromised_assets": (
+                        "The following assets "
+                        "do not belong to the "
+                        "selected organization: "
+                        f"{sorted(missing_ids)}"
+                    )
+                }
+            )
+
+
+        return attrs

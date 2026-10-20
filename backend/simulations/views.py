@@ -10,11 +10,19 @@ from assets.serializers import (
     AssetSerializer,
     RelationshipSerializer,
 )
+from identities.models import (
+    CredentialExposure,
+    Identity,
+    IdentityAccess,
+    IdentityLink,
+)
 
 from business.serializers import (
     BusinessProcessSerializer,
 )
-
+from simulation_engine.identity_propagation import (
+    analyze_identity_propagation,
+)
 from simulation_engine.business_impact import (
     analyze_business_impact,
 )
@@ -54,6 +62,7 @@ from .serializers import (
     CounterfactualSimulationRequestSerializer,
     SecurityControlSimulationRequestSerializer,
     SecurityControlRankingRequestSerializer,
+    IdentityPropagationRequestSerializer,
 )
 
 from simulation_engine.reachability import (
@@ -64,6 +73,7 @@ from .services import (
     load_business_context,
     load_organization_graph,
     load_security_control_context,
+    load_identity_propagation_context,
 )
 
 def _serialize_counterfactual_run(
@@ -2035,6 +2045,425 @@ class SecurityControlRankingView(
 
         return Response(
             response_data,
+
+            status=status.HTTP_200_OK,
+        )
+
+class IdentityPropagationView(
+    APIView
+):
+    def post(self, request):
+        serializer = (
+            IdentityPropagationRequestSerializer(
+                data=request.data
+            )
+        )
+
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+
+        organization = (
+            serializer.validated_data[
+                "organization"
+            ]
+        )
+
+
+        seeds = {
+            item[
+                "asset_id"
+            ]: item[
+                "privilege"
+            ]
+
+            for item
+            in serializer.validated_data[
+                "compromised_assets"
+            ]
+        }
+
+
+        context = (
+            load_identity_propagation_context(
+                organization
+            )
+        )
+
+
+        result = (
+            analyze_identity_propagation(
+                compromised_assets=seeds,
+
+                identities=(
+                    context[
+                        "identities"
+                    ]
+                ),
+
+                credentials=(
+                    context[
+                        "credentials"
+                    ]
+                ),
+
+                accesses=(
+                    context[
+                        "accesses"
+                    ]
+                ),
+
+                links=(
+                    context[
+                        "links"
+                    ]
+                ),
+            )
+        )
+
+
+        asset_ids = {
+            asset_id
+
+            for (
+                asset_id,
+                _,
+            )
+            in result.compromised_assets
+        }
+
+
+        assets_by_id = {
+            asset.id:
+                asset.name
+
+            for asset
+            in Asset.objects.filter(
+                organization=organization,
+
+                id__in=asset_ids,
+            )
+        }
+
+
+        identities_by_id = {
+            item.id:
+                item.name
+
+            for item
+            in Identity.objects.filter(
+                organization=organization
+            )
+        }
+
+
+        credentials_by_id = {
+            item.id:
+                item.name
+
+            for item
+            in CredentialExposure.objects.filter(
+                organization=organization
+            )
+        }
+
+
+        accesses_by_id = {
+            item.id:
+                item.get_access_type_display()
+
+            for item
+            in IdentityAccess.objects.filter(
+                organization=organization
+            )
+        }
+
+
+        links_by_id = {
+            item.id:
+                item.get_link_type_display()
+
+            for item
+            in IdentityLink.objects.filter(
+                organization=organization
+            )
+        }
+
+
+        def entity_name(
+            kind,
+            entity_id,
+        ):
+            if kind == "ASSET":
+                return assets_by_id.get(
+                    entity_id,
+
+                    f"Asset {entity_id}",
+                )
+
+
+            if kind == "IDENTITY":
+                return identities_by_id.get(
+                    entity_id,
+
+                    f"Identity {entity_id}",
+                )
+
+
+            return str(
+                entity_id
+            )
+
+
+        def reference_name(
+            step,
+        ):
+            if (
+                step.step_type
+                == "CREDENTIAL_DISCOVERY"
+            ):
+                return credentials_by_id.get(
+                    step.reference_id,
+
+                    str(
+                        step.reference_id
+                    ),
+                )
+
+
+            if (
+                step.step_type
+                == "IDENTITY_ACCESS"
+            ):
+                return accesses_by_id.get(
+                    step.reference_id,
+
+                    str(
+                        step.reference_id
+                    ),
+                )
+
+
+            if (
+                step.step_type
+                == "IDENTITY_LINK"
+            ):
+                return links_by_id.get(
+                    step.reference_id,
+
+                    str(
+                        step.reference_id
+                    ),
+                )
+
+
+            return str(
+                step.reference_id
+            )
+
+
+        compromised_assets = [
+            {
+                "asset_id":
+                    asset_id,
+
+                "asset_name":
+                    assets_by_id.get(
+                        asset_id,
+
+                        f"Asset {asset_id}",
+                    ),
+
+                "privilege":
+                    privilege,
+
+                "seed":
+                    asset_id in seeds,
+            }
+
+            for (
+                asset_id,
+                privilege,
+            )
+            in result.compromised_assets
+        ]
+
+
+        acquired_identities = [
+            {
+                "identity_id":
+                    item.identity_id,
+
+                "identity_name":
+                    identities_by_id.get(
+                        item.identity_id,
+
+                        (
+                            "Identity "
+                            f"{item.identity_id}"
+                        ),
+                    ),
+
+                "mfa_satisfied":
+                    item.mfa_satisfied,
+            }
+
+            for item
+            in result.acquired_identities
+        ]
+
+
+        steps = [
+            {
+                "step_type":
+                    step.step_type,
+
+                "source_kind":
+                    step.source_kind,
+
+                "source_id":
+                    step.source_id,
+
+                "source_name":
+                    entity_name(
+                        step.source_kind,
+
+                        step.source_id,
+                    ),
+
+                "target_kind":
+                    step.target_kind,
+
+                "target_id":
+                    step.target_id,
+
+                "target_name":
+                    entity_name(
+                        step.target_kind,
+
+                        step.target_id,
+                    ),
+
+                "reference_id":
+                    step.reference_id,
+
+                "reference_name":
+                    reference_name(
+                        step
+                    ),
+
+                "detail":
+                    step.detail,
+            }
+
+            for step
+            in result.steps
+        ]
+
+
+        blocked_steps = [
+            {
+                "step_type":
+                    step.step_type,
+
+                "source_kind":
+                    step.source_kind,
+
+                "source_id":
+                    step.source_id,
+
+                "source_name":
+                    entity_name(
+                        step.source_kind,
+
+                        step.source_id,
+                    ),
+
+                "target_kind":
+                    step.target_kind,
+
+                "target_id":
+                    step.target_id,
+
+                "target_name":
+                    entity_name(
+                        step.target_kind,
+
+                        step.target_id,
+                    ),
+
+                "reference_id":
+                    step.reference_id,
+
+                "reason":
+                    step.reason,
+            }
+
+            for step
+            in result.blocked_steps
+        ]
+
+
+        return Response(
+            {
+                "organization":
+                    organization.id,
+
+                "summary": {
+                    "seed_assets":
+                        len(
+                            seeds
+                        ),
+
+                    "potentially_compromised_assets":
+                        len(
+                            compromised_assets
+                        ),
+
+                    "new_assets_from_identity":
+                        len(
+                            [
+                                item
+
+                                for item
+                                in compromised_assets
+
+                                if not item[
+                                    "seed"
+                                ]
+                            ]
+                        ),
+
+                    "acquired_identities":
+                        len(
+                            acquired_identities
+                        ),
+
+                    "successful_identity_steps":
+                        len(
+                            steps
+                        ),
+
+                    "blocked_identity_steps":
+                        len(
+                            blocked_steps
+                        ),
+                },
+
+                "compromised_assets":
+                    compromised_assets,
+
+                "acquired_identities":
+                    acquired_identities,
+
+                "steps":
+                    steps,
+
+                "blocked_steps":
+                    blocked_steps,
+            },
 
             status=status.HTTP_200_OK,
         )

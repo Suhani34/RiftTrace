@@ -65,6 +65,13 @@ Deployment:
 - Atomic environment imports
 - Repeatable/idempotent imports
 - Import history
+- Identity modeling
+- User/service-account/role representation
+- Modeled credential exposure
+- Identity-to-identity privilege relationships
+- Identity-to-asset access permissions
+- MFA-aware identity propagation
+- Credential-driven lateral movement analysis
 
 ## Simulation Semantics
 

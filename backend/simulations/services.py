@@ -11,7 +11,19 @@ from business.models import (
     BusinessProcess,
     BusinessProcessDependency,
 )
+from identities.models import (
+    CredentialExposure,
+    Identity,
+    IdentityAccess,
+    IdentityLink,
+)
 
+from simulation_engine.identity_records import (
+    CredentialExposureRecord,
+    IdentityAccessRecord,
+    IdentityLinkRecord,
+    IdentityRecord,
+)
 from simulation_engine.business_records import (
     BusinessDependencyRecord,
     BusinessProcessRecord,
@@ -463,3 +475,143 @@ def load_security_control_context(
 
         records=records,
     )
+
+def load_identity_propagation_context(
+    organization,
+):
+    identities = tuple(
+        IdentityRecord(
+            id=item.id,
+
+            name=item.name,
+
+            identity_type=(
+                item.identity_type
+            ),
+
+            privilege_level=(
+                item.privilege_level
+            ),
+
+            enabled=item.enabled,
+        )
+
+        for item
+        in Identity.objects.filter(
+            organization=organization
+        )
+    )
+
+
+    credentials = tuple(
+        CredentialExposureRecord(
+            id=item.id,
+
+            name=item.name,
+
+            identity_id=(
+                item.identity_id
+            ),
+
+            stored_on_asset_id=(
+                item.stored_on_asset_id
+            ),
+
+            credential_type=(
+                item.credential_type
+            ),
+
+            discoverable_on_compromise=(
+                item
+                .discoverable_on_compromise
+            ),
+
+            satisfies_mfa=(
+                item.satisfies_mfa
+            ),
+
+            active=item.active,
+        )
+
+        for item
+        in CredentialExposure.objects.filter(
+            organization=organization
+        )
+    )
+
+
+    accesses = tuple(
+        IdentityAccessRecord(
+            id=item.id,
+
+            identity_id=(
+                item.identity_id
+            ),
+
+            asset_id=item.asset_id,
+
+            access_type=(
+                item.access_type
+            ),
+
+            granted_privilege=(
+                item.granted_privilege
+            ),
+
+            requires_mfa=(
+                item.requires_mfa
+            ),
+
+            enabled=item.enabled,
+        )
+
+        for item
+        in IdentityAccess.objects.filter(
+            organization=organization
+        )
+    )
+
+
+    links = tuple(
+        IdentityLinkRecord(
+            id=item.id,
+
+            source_identity_id=(
+                item.source_identity_id
+            ),
+
+            target_identity_id=(
+                item.target_identity_id
+            ),
+
+            link_type=(
+                item.link_type
+            ),
+
+            requires_mfa=(
+                item.requires_mfa
+            ),
+
+            enabled=item.enabled,
+        )
+
+        for item
+        in IdentityLink.objects.filter(
+            organization=organization
+        )
+    )
+
+
+    return {
+        "identities":
+            identities,
+
+        "credentials":
+            credentials,
+
+        "accesses":
+            accesses,
+
+        "links":
+            links,
+    }

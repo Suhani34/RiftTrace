@@ -84,4 +84,8 @@ urlpatterns = [
         "ingestion/",
         include("ingestion.urls"),
     ),
+    path(
+        "",
+        include("identities.urls"),
+    ),
 ]

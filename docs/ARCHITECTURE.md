@@ -105,3 +105,23 @@ A failed validation does not modify the environment.
 
 Applied imports are recorded through `IngestionRun`, but raw
 uploaded files are not stored.
+
+##Identity-aware
+
+               TECHNICAL GRAPH
+                    │
+               compromised
+                    ▼
+                  Asset
+                    │
+           credential exposure
+                    ▼
+                Identity
+                    │
+              identity link
+                    ▼
+                 Role
+                    │
+             identity access
+                    ▼
+                  Asset
