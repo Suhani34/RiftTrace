@@ -88,7 +88,22 @@ credential/session satisfies MFA.
 These results indicate potential access under the supplied
 model and do not represent observed attacker behavior.
 
-## 9. Interpretation
+## 9. MITRE ATT&CK Mapping
+
+RiftTrace uses deterministic ATT&CK mapping rules to
+associate modeled propagation events with standardized
+ATT&CK technique identifiers.
+
+Mappings require explicit modeled evidence. For example,
+T1190 is only associated with a modeled vulnerability
+exploitation event when the affected asset is represented
+as Internet exposed.
+
+The mapping layer does not assert that ATT&CK behavior has
+actually been observed. Results are presented as technique
+annotations consistent with a simulated scenario.
+
+## 10. Interpretation
 
 Results are deterministic consequences of the supplied model.
 

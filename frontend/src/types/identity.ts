@@ -1,3 +1,7 @@
+import type {
+  AttackAnnotation,
+} from "./attackMapping";
+
 export type IdentityType =
   | "USER"
   | "SERVICE_ACCOUNT"
@@ -180,6 +184,9 @@ export interface IdentityPropagationResult {
     reference_name: string;
 
     detail: string;
+
+    attack_annotations:
+      AttackAnnotation[];
   }>;
 
   blocked_steps: Array<{

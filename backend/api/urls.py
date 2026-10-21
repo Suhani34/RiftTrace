@@ -88,4 +88,10 @@ urlpatterns = [
         "",
         include("identities.urls"),
     ),
+    path(
+        "attack/",
+        include(
+            "attack_mapping.urls"
+        ),
+    ),
 ]

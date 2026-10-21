@@ -125,3 +125,22 @@ uploaded files are not stored.
              identity access
                     ▼
                   Asset
+
+##MITRE ATT&CK Mapping
+
+Simulation Engine
+      │
+      ▼
+Normalized Modeled Event
+      │
+      ▼
+ATT&CK Mapping Rules
+      │
+      ▼
+Technique Annotation
+      │
+      ▼
+API / UI / Reporting
+
+The ATT&CK mapping layer does not modify propagation
+decisions. It annotates already-generated modeled events.

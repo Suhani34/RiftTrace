@@ -111,3 +111,20 @@ cd backend
 source ../.venv/bin/activate
 python manage.py migrate
 python manage.py runserver
+
+##MITRE ATT&CK Mapping
+
+RiftTrace includes a versioned ATT&CK annotation layer that
+maps modeled simulation events to applicable ATT&CK
+techniques through deterministic, explainable rules.
+
+Initial supported mappings include:
+
+T1190 — Exploit Public-Facing Application
+T1552 — Unsecured Credentials
+T1078 — Valid Accounts
+T1021 — Remote Services
+
+ATT&CK annotations describe modeled behavior and are not
+detections or evidence of observed malicious activity.
+ATT&CK source release: v20.0

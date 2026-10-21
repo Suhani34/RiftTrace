@@ -13,7 +13,8 @@ import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
 import IdentityGraphPage
   from "./pages/IdentityGraphPage";
-
+import AttackMappingPage
+  from "./pages/AttackMappingPage";
 import IdentityPropagationPage
   from "./pages/IdentityPropagationPage";
 import RemediationRankingPage
@@ -97,6 +98,13 @@ export default function App() {
 	  path="ingestion"
 	  element={
 	    <IngestionPage />
+	  }
+	/>
+
+	<Route
+	  path="attack-mapping"
+	  element={
+	    <AttackMappingPage />
 	  }
 	/>
 

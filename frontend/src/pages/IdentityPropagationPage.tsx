@@ -445,7 +445,6 @@ export default function IdentityPropagationPage() {
             </article>
           </section>
 
-
           <section className="panel">
             <h3>
               Identity Path
@@ -473,8 +472,7 @@ export default function IdentityPropagationPage() {
                     →
                     {" "}
                     {
-                      step
-                        .reference_name
+                      step.reference_name
                     }
                     {" "}
                     →
@@ -485,11 +483,50 @@ export default function IdentityPropagationPage() {
                       step.target_name
                     }
                   </span>
+
+                  {step
+                    .attack_annotations
+                    .length > 0 && (
+                      <div className="attack-annotation-list">
+                        {step
+                          .attack_annotations
+                          .map(
+                            (annotation) => (
+                              <a
+                                key={
+                                  annotation.attack_id
+                                }
+
+                                className="attack-annotation-badge"
+
+                                href={
+                                  annotation.source_url
+                                }
+
+                                target="_blank"
+
+                                rel="noreferrer"
+
+                                title={
+                                  annotation.basis
+                                }
+                              >
+                                {
+                                  annotation.attack_id
+                                }
+                                {" "}
+                                {
+                                  annotation.name
+                                }
+                              </a>
+                            ),
+                          )}
+                      </div>
+                    )}
                 </div>
               ),
             )}
           </section>
-
 
           <section className="panel">
             <h3>

@@ -2719,3 +2719,243 @@ span {
     text-align: left;
   }
 }
+
+.attack-framework-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        180px,
+        1fr
+      )
+    );
+
+  gap: 16px;
+}
+
+.attack-framework-summary > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.attack-framework-summary span {
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.attack-framework-summary strong {
+  font-size: 24px;
+}
+
+.attack-technique-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        240px,
+        1fr
+      )
+    );
+
+  gap: 14px;
+
+  margin-top: 16px;
+}
+
+.attack-technique-card {
+  padding: 16px;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+.attack-technique-card h4 {
+  margin:
+    12px
+    0;
+}
+
+.attack-technique-heading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 10px;
+}
+
+.attack-technique-heading strong {
+  font-size: 18px;
+}
+
+.attack-technique-heading span {
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.attack-tactic-list {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-bottom: 14px;
+}
+
+.attack-tactic-list span {
+  padding:
+    4px
+    8px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.attack-technique-card a {
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+.attack-rule-row {
+  display: grid;
+
+  grid-template-columns:
+    1.2fr
+    1fr
+    1.2fr
+    1fr;
+
+  gap: 16px;
+
+  padding:
+    16px
+    0;
+
+  border-bottom:
+    1px solid #e2e8f0;
+}
+
+.attack-rule-row:last-child {
+  border-bottom: 0;
+}
+
+.attack-rule-row > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.attack-rule-row span,
+.attack-rule-row small {
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.attack-rule-row code {
+  overflow-wrap: anywhere;
+
+  font-size: 11px;
+}
+
+.attack-rule-row p {
+  grid-column:
+    1 / -1;
+
+  margin: 0;
+
+  color: #475569;
+
+  font-size: 12px;
+}
+
+.attack-annotation-list {
+  grid-column:
+    1 / -1;
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 8px;
+}
+
+.attack-annotation-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding:
+    5px
+    9px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius: 999px;
+
+  text-decoration: none;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.attack-disclaimer {
+  font-size: 13px;
+}
+
+.attack-disclaimer p {
+  margin-bottom: 0;
+
+  color: #475569;
+}
+
+@media (
+  max-width: 900px
+) {
+  .attack-rule-row {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+}
+
+@media (
+  max-width: 600px
+) {
+  .attack-rule-row {
+    grid-template-columns:
+      1fr;
+  }
+
+  .attack-rule-row p {
+    grid-column: auto;
+  }
+}

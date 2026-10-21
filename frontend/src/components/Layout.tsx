@@ -57,6 +57,10 @@ export default function Layout() {
 	  Identity Graph
 	</NavLink>
 
+	<NavLink to="/attack-mapping">
+	  MITRE ATT&CK
+	</NavLink>
+
 	<NavLink to="/identity-propagation">
 	  Identity Propagation
 	</NavLink>

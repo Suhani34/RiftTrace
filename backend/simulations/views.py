@@ -16,7 +16,10 @@ from identities.models import (
     IdentityAccess,
     IdentityLink,
 )
-
+from attack_mapping.services import (
+    load_attack_mapping_context,
+    map_attack_event,
+)
 from business.serializers import (
     BusinessProcessSerializer,
 )
@@ -82,7 +85,7 @@ def _serialize_counterfactual_run(
     business_context,
 ):
     propagated_assets = [
-	{
+        {
             "asset":
                 AssetSerializer(
                     graph_context
@@ -2159,9 +2162,9 @@ class IdentityPropagationView(
         }
 
 
-        credentials_by_id = {
+        credential_objects_by_id = {
             item.id:
-                item.name
+                item
 
             for item
             in CredentialExposure.objects.filter(
@@ -2170,9 +2173,21 @@ class IdentityPropagationView(
         }
 
 
-        accesses_by_id = {
+        credentials_by_id = {
+            item_id:
+                item.name
+
+            for (
+                item_id,
+                item,
+            )
+            in credential_objects_by_id.items()
+        }
+
+
+        access_objects_by_id = {
             item.id:
-                item.get_access_type_display()
+                item
 
             for item
             in IdentityAccess.objects.filter(
@@ -2181,9 +2196,21 @@ class IdentityPropagationView(
         }
 
 
-        links_by_id = {
+        accesses_by_id = {
+            item_id:
+                item.get_access_type_display()
+
+            for (
+                item_id,
+                item,
+            )
+            in access_objects_by_id.items()
+        }
+
+
+        link_objects_by_id = {
             item.id:
-                item.get_link_type_display()
+                item
 
             for item
             in IdentityLink.objects.filter(
@@ -2191,6 +2218,21 @@ class IdentityPropagationView(
             )
         }
 
+
+        links_by_id = {
+            item_id:
+                item.get_link_type_display()
+
+            for (
+                item_id,
+                item,
+            )
+            in link_objects_by_id.items()
+        }
+
+        attack_mapping_context = (
+            load_attack_mapping_context()
+        )
 
         def entity_name(
             kind,
@@ -2216,6 +2258,99 @@ class IdentityPropagationView(
                 entity_id
             )
 
+        def attack_annotations_for_step(
+            step,
+        ):
+            if (
+                step.step_type
+                == "CREDENTIAL_DISCOVERY"
+            ):
+                credential = (
+                    credential_objects_by_id
+                    .get(
+                        step.reference_id
+                    )
+                )
+                if credential is None:
+                    return []
+
+                return map_attack_event(
+                    event_type=(
+                        "CREDENTIAL_DISCOVERY"
+                    ),
+                    attributes={
+                        "credential_type":
+                            (
+                                credential
+                                .credential_type
+                            ),
+                    },
+                    context=(
+                        attack_mapping_context
+                    ),
+                )
+
+            if (
+                step.step_type
+                == "IDENTITY_ACCESS"
+            ):
+                access = (
+                    access_objects_by_id
+                    .get(
+                        step.reference_id
+                    )
+                )
+                if access is None:
+                    return []
+                return map_attack_event(
+                    event_type=(
+                        "IDENTITY_ACCESS"
+                    ),
+                    attributes={
+                        "access_type":
+                            access.access_type,
+
+                        "requires_mfa":
+                            access.requires_mfa,
+                    },
+
+                    context=(
+                        attack_mapping_context
+                    ),
+                )
+
+            if (
+                step.step_type
+                == "IDENTITY_LINK"
+            ):
+                link = (
+                    link_objects_by_id
+                    .get(
+                        step.reference_id
+                    )
+                )
+
+                if link is None:
+                    return []
+
+                return map_attack_event(
+                    event_type=(
+                        "IDENTITY_LINK"
+                    ),
+
+                    attributes={
+                        "link_type":
+                            link.link_type,
+
+                        "requires_mfa":
+                            link.requires_mfa,
+                    },
+                    context=(
+                        attack_mapping_context
+                    ),
+                )
+
+            return []
 
         def reference_name(
             step,
@@ -2356,6 +2491,11 @@ class IdentityPropagationView(
 
                 "detail":
                     step.detail,
+                "attack_annotations":
+                    attack_annotations_for_step(
+                        step
+                    ),
+
             }
 
             for step
