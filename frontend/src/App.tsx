@@ -11,6 +11,7 @@ import OrganizationsPage from "./pages/OrganizationsPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
 import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
+import ScenarioHistoryPage from "./pages/ScenarioHistoryPage";
 import IdentityGraphPage
   from "./pages/IdentityGraphPage";
 import AttackMappingPage
@@ -105,6 +106,13 @@ export default function App() {
 	  path="attack-mapping"
 	  element={
 	    <AttackMappingPage />
+	  }
+	/>
+
+	<Route
+	  path="scenario-history"
+	  element={
+	    <ScenarioHistoryPage />
 	  }
 	/>
 

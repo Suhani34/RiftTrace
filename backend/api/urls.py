@@ -94,4 +94,12 @@ urlpatterns = [
             "attack_mapping.urls"
         ),
     ),
+    path(
+        "simulations/",
+        include("simulations.urls"),
+    ),
+    path(
+        "scenarios/",
+        include("scenarios.urls"),
+    ),
 ]

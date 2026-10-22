@@ -61,9 +61,14 @@ export default function Layout() {
 	  MITRE ATT&CK
 	</NavLink>
 
+	<NavLink to="/scenario-history">
+	  Scenario History
+	</NavLink>
+
 	<NavLink to="/identity-propagation">
 	  Identity Propagation
 	</NavLink>
+
         <NavLink to="/business-processes">
           Business Processes
         </NavLink>

@@ -11,6 +11,12 @@ import {
   runIdentityPropagation,
 } from "../api/identities";
 
+import SaveScenarioPanel from "../components/SaveScenarioPanel";
+
+import {
+  extractComparableMetrics,
+} from "../utils/scenarioMetrics";
+
 import {
   listAssets,
 } from "../api/assets";
@@ -228,6 +234,23 @@ export default function IdentityPropagationPage() {
     }
   }
 
+  const scenarioRequestPayload = {
+    organization:
+      Number(
+        organizationId
+      ),
+
+    compromised_assets: [
+      {
+        asset_id:
+          Number(
+            assetId
+          ),
+
+        privilege,
+      },
+    ],
+  };
 
   return (
     <>
@@ -444,6 +467,33 @@ export default function IdentityPropagationPage() {
               </span>
             </article>
           </section>
+
+          <SaveScenarioPanel
+            organizationId={
+              Number(
+                organizationId
+              )
+            }
+
+            simulationType={
+              "IDENTITY_PROPAGATION"
+            }
+
+            requestPayload={
+              scenarioRequestPayload
+            }
+
+            resultPayload={
+              result
+            }
+
+            metrics={
+              extractComparableMetrics(
+                "IDENTITY_PROPAGATION",
+                result,
+              )
+            }
+          />
 
           <section className="panel">
             <h3>

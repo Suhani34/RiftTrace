@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'ingestion',
     'identities',
+    'scenarios',
     'attack_mapping',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',

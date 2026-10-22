@@ -82,6 +82,25 @@ explicitly modeled topology, vulnerabilities, privileges,
 authentication requirements, security controls and
 business dependencies.
 
+## Saved Simulation Scenarios
+
+RiftTrace supports reproducible simulation history.
+
+A completed simulation can be saved as a scenario containing
+its simulation type and request payload. Each execution creates
+an immutable ScenarioRun containing the request used, complete
+result payload, normalized comparison metrics, status, and
+timestamp.
+
+Saved scenarios can later be rerun against the current modeled
+environment. Historical runs remain unchanged, allowing users
+to compare modeled before/after results after modifying security
+controls, vulnerabilities, relationships, identity access, or
+other modeled conditions.
+
+The comparison represents differences between modeled scenarios
+and must not be interpreted as observed real-world attack behavior.
+
 ## Architecture
 
 Django handles persistence, API validation and orchestration.
