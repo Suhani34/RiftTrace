@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'ingestion',
     'identities',
     'scenarios',
+    'evaluation',
     'attack_mapping',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',

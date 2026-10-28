@@ -65,6 +65,11 @@ export default function Layout() {
 	  Scenario History
 	</NavLink>
 
+	<NavLink
+	  to="/evaluation">
+	  Research Evaluation
+	</NavLink>
+
 	<NavLink to="/identity-propagation">
 	  Identity Propagation
 	</NavLink>

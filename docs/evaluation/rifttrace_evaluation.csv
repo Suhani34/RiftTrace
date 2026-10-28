@@ -1,0 +1,5 @@
+experiment_id,experiment_name,organization,scenario,simulation_type,intervention,baseline_run,treatment_run,metric,metric_label,before,after,reduction,interpretation
+1,MFA Protection Experiment,Import Demo Corp,Imported Web Identity Baseline,IDENTITY_PROPAGATION,Require MFA for privileged identity access,1,2,compromised_assets,Compromised Assets,2,2,0,UNCHANGED
+1,MFA Protection Experiment,Import Demo Corp,Imported Web Identity Baseline,IDENTITY_PROPAGATION,Require MFA for privileged identity access,1,2,acquired_identities,Acquired Identities,2,2,0,UNCHANGED
+1,MFA Protection Experiment,Import Demo Corp,Imported Web Identity Baseline,IDENTITY_PROPAGATION,Require MFA for privileged identity access,1,2,successful_identity_steps,Successful Identity Steps,3,3,0,UNCHANGED
+1,MFA Protection Experiment,Import Demo Corp,Imported Web Identity Baseline,IDENTITY_PROPAGATION,Require MFA for privileged identity access,1,2,new_assets_from_identity,New Assets Reached Through Identity,1,1,0,UNCHANGED

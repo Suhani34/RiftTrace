@@ -102,4 +102,8 @@ urlpatterns = [
         "scenarios/",
         include("scenarios.urls"),
     ),
+    path(
+        "evaluation/",
+        include("evaluation.urls"),
+    ),
 ]
