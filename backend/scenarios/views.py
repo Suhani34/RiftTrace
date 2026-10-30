@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Prefetch
 from rest_framework import (
     generics,
     status,
@@ -24,6 +24,29 @@ from .services import (
     create_scenario_run,
 )
 
+def saved_scenario_queryset():
+    return (
+        SavedScenario.objects
+        .select_related(
+            "organization"
+        )
+        .prefetch_related(
+            Prefetch(
+                "runs",
+
+                queryset=(
+                    ScenarioRun.objects
+                    .order_by(
+                        "-run_number"
+                    )
+                ),
+
+                to_attr=(
+                    "ordered_runs"
+                ),
+            )
+        )
+    )
 
 class ScenarioListCreateView(
     generics.ListCreateAPIView
@@ -37,13 +60,7 @@ class ScenarioListCreateView(
         self,
     ):
         queryset = (
-            SavedScenario.objects
-            .select_related(
-                "organization"
-            )
-            .prefetch_related(
-                "runs"
-            )
+            saved_scenario_queryset()
         )
 
 
@@ -91,13 +108,7 @@ class ScenarioDetailView(
     )
 
     queryset = (
-        SavedScenario.objects
-        .select_related(
-            "organization"
-        )
-        .prefetch_related(
-            "runs"
-        )
+        saved_scenario_queryset()
     )
 
 

@@ -1,0 +1,6 @@
+{
+  "organization": 5,
+  "start_asset": 14,
+  "start_privilege": "LOW",
+  "control_ids": [1, 2, 3, 4, 5]
+}

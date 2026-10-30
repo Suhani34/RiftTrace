@@ -1,0 +1,21 @@
+RiftTrace Phase 19 benchmark environment
+
+2026-10-29T22:49:48+05:30
+
+Linux smprj9434-VMware-Virtual-Platform 7.0.0-34-generic #34~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 15:38:29 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+CPU(s):                                  4
+On-line CPU(s) list:                     0-3
+Model name:                              AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx
+Thread(s) per core:                      1
+Core(s) per socket:                      1
+Socket(s):                               4
+NUMA node0 CPU(s):                       0-3
+
+               total        used        free      shared  buff/cache   available
+Mem:           3.8Gi       1.5Gi       746Mi        76Mi       1.8Gi       2.3Gi
+Swap:          3.6Gi       106Mi       3.5Gi
+
+Python 3.12.3
+
+psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)

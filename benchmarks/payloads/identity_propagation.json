@@ -1,0 +1,9 @@
+{
+  "organization": 6,
+  "compromised_assets": [
+    {
+      "asset_id": 25,
+      "privilege": "LOW"
+    }
+  ]
+}

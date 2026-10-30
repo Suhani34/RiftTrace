@@ -1,0 +1,7 @@
+{
+  "organization": 5,
+  "start_asset": 14,
+  "start_privilege": "LOW",
+  "disabled_relationship_ids": [8],
+  "disabled_vulnerability_ids": [1]
+}

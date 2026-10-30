@@ -4,7 +4,7 @@ import {
 } from "react-router";
 
 import Layout from "./components/Layout";
-
+import BenchmarkingPage from "./pages/BenchmarkingPage";
 import AssetsPage from "./pages/AssetsPage";
 import DashboardPage from "./pages/DashboardPage";
 import OrganizationsPage from "./pages/OrganizationsPage";
@@ -121,6 +121,13 @@ export default function App() {
 	  path="evaluation"
 	  element={
 	    <EvaluationPage />
+	  }
+	/>
+
+	<Route
+	  path="benchmarking"
+	  element={
+	    <BenchmarkingPage />
 	  }
 	/>
 

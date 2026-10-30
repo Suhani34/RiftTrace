@@ -70,6 +70,11 @@ export default function Layout() {
 	  Research Evaluation
 	</NavLink>
 
+	<NavLink
+	  to="/benchmarking">
+	  Performance
+	</NavLink>
+
 	<NavLink to="/identity-propagation">
 	  Identity Propagation
 	</NavLink>

@@ -73,48 +73,78 @@ class SavedScenarioSerializer(
 
         return value
 
+    def _ordered_runs(
+        self,
+        obj,
+    ):
+        if hasattr(
+            obj,
+            "ordered_runs",
+        ):
+            return (
+                obj.ordered_runs
+            )
+
+
+        return list(
+            obj.runs
+            .order_by(
+                "-run_number"
+            )
+        )
 
     def get_run_count(
         self,
         obj,
     ):
-        return obj.runs.count()
+        return len(
+            self._ordered_runs(
+                obj
+            )
+        )
 
 
     def get_latest_run_number(
         self,
         obj,
     ):
-        latest_run = (
-            obj.runs
-            .order_by(
-                "-run_number"
+        runs = (
+            self._ordered_runs(
+                obj
             )
-            .first()
         )
 
-        if latest_run is None:
+
+        if not runs:
             return None
 
-        return latest_run.run_number
 
+        return (
+            runs[
+                0
+            ].run_number
+        )
 
     def get_latest_run_at(
         self,
         obj,
     ):
-        latest_run = (
-            obj.runs
-            .order_by(
-                "-run_number"
+        runs = (
+            self._ordered_runs(
+                obj
             )
-            .first()
         )
 
-        if latest_run is None:
+
+        if not runs:
             return None
 
-        return latest_run.created_at
+
+        return (
+            runs[
+                0
+            ].created_at
+        )
 
 
 class ScenarioRunSerializer(

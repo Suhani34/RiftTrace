@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'identities',
     'scenarios',
     'evaluation',
+    'benchmarking',
     'attack_mapping',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',
