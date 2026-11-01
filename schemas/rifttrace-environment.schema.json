@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RiftTrace Portable Environment",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "generated_at",
+    "organization",
+    "payload_sha256",
+    "data"
+  ],
+  "properties": {
+    "schema": {
+      "const": "rifttrace.environment"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "payload_sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "organization": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "network_zones",
+        "assets",
+        "relationships",
+        "vulnerabilities"
+      ],
+      "properties": {
+        "network_zones": {
+          "type": "array"
+        },
+        "assets": {
+          "type": "array"
+        },
+        "relationships": {
+          "type": "array"
+        },
+        "vulnerabilities": {
+          "type": "array"
+        }
+      }
+    }
+  }
+}

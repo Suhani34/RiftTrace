@@ -110,4 +110,8 @@ urlpatterns = [
         "benchmarking/",
         include("benchmarking.urls"),
     ),
+    path(
+        "reporting/",
+        include("reporting.urls"),
+    ),
 ]

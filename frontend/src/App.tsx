@@ -13,6 +13,7 @@ import TopologyPage from "./pages/TopologyPage";
 import NetworkZonesPage from "./pages/NetworkZonesPage";
 import EvaluationPage from "./pages/EvaluationPage";
 import ScenarioHistoryPage from "./pages/ScenarioHistoryPage";
+import ReportsPage from "./pages/ReportsPage";
 import IdentityGraphPage
   from "./pages/IdentityGraphPage";
 import AttackMappingPage
@@ -128,6 +129,13 @@ export default function App() {
 	  path="benchmarking"
 	  element={
 	    <BenchmarkingPage />
+	  }
+	/>
+
+	<Route
+	  path="reports"
+	  element={
+	    <ReportsPage />
 	  }
 	/>
 

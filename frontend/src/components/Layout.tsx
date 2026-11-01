@@ -75,6 +75,11 @@ export default function Layout() {
 	  Performance
 	</NavLink>
 
+	<NavLink
+	  to="/reports">
+	  Import / Export
+	</NavLink>
+
 	<NavLink to="/identity-propagation">
 	  Identity Propagation
 	</NavLink>

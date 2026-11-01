@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'scenarios',
     'evaluation',
     'benchmarking',
+    'reporting',
     'attack_mapping',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',

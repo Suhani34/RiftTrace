@@ -3172,3 +3172,26 @@ span {
 .benchmark-table th {
   white-space: nowrap;
 }
+
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.report-actions button {
+  min-width: 180px;
+}
+
+@media (
+  max-width: 700px
+) {
+  .report-actions {
+    flex-direction: column;
+  }
+
+  .report-actions button {
+    width: 100%;
+  }
+}
