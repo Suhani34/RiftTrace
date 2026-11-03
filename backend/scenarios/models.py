@@ -25,6 +25,11 @@ class SavedScenario(models.Model):
             "Counterfactual",
         )
 
+        PATH_INTELLIGENCE = (
+            "PATH_INTELLIGENCE",
+            "Path Intelligence",
+        )
+
         SECURITY_CONTROL = (
             "SECURITY_CONTROL",
             "Security Control",

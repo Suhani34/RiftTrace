@@ -14,6 +14,8 @@ import NetworkZonesPage from "./pages/NetworkZonesPage";
 import EvaluationPage from "./pages/EvaluationPage";
 import ScenarioHistoryPage from "./pages/ScenarioHistoryPage";
 import ReportsPage from "./pages/ReportsPage";
+import PathIntelligencePage
+  from "./pages/PathIntelligencePage";
 import IdentityGraphPage
   from "./pages/IdentityGraphPage";
 import AttackMappingPage
@@ -163,6 +165,13 @@ export default function App() {
 	  path="counterfactual"
 	  element={
 	    <CounterfactualPage />
+	  }
+	/>
+
+	<Route
+	  path="path-intelligence"
+	  element={
+	    <PathIntelligencePage />
 	  }
 	/>
 

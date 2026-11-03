@@ -88,6 +88,10 @@ export default function Layout() {
           Business Processes
         </NavLink>
 
+	<NavLink to="/path-intelligence">
+	  Attack Paths
+	</NavLink>
+
 	<NavLink to="/counterfactual">
 	  Counterfactual
 	</NavLink>

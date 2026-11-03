@@ -5,7 +5,9 @@ import {
 import type {
   ReachabilitySimulationResult,
 } from "../types/simulation";
-
+import type {
+  PathIntelligenceResult,
+} from "../types/pathIntelligence";
 import type {
   AttackPropagationResult,
 } from "../types/attackSimulation";
@@ -216,6 +218,47 @@ export function runControlRanking(
 
         control_ids:
           controlIds,
+      }),
+    },
+  );
+}
+
+export function runPathIntelligence(
+  organizationId: number,
+  startAssetId: number,
+  startPrivilege:
+    "LOW"
+    | "HIGH",
+  targetAssetIds:
+    number[],
+  maxDepth = 8,
+  maxPaths = 1000,
+) {
+  return apiRequest<
+    PathIntelligenceResult
+  >(
+    "/simulations/path-intelligence/",
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        organization:
+          organizationId,
+
+        start_asset:
+          startAssetId,
+
+        start_privilege:
+          startPrivilege,
+
+        target_asset_ids:
+          targetAssetIds,
+
+        max_depth:
+          maxDepth,
+
+        max_paths:
+          maxPaths,
       }),
     },
   );

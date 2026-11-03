@@ -779,3 +779,52 @@ class IdentityPropagationRequestSerializer(
 
 
         return attrs
+class PathIntelligenceRequestSerializer(
+    serializers.Serializer
+):
+    organization = (
+        serializers.IntegerField()
+    )
+
+    start_asset = (
+        serializers.IntegerField()
+    )
+
+    start_privilege = (
+        serializers.ChoiceField(
+            choices=[
+                "LOW",
+                "HIGH",
+            ]
+        )
+    )
+
+    target_asset_ids = (
+        serializers.ListField(
+            child=(
+                serializers.IntegerField()
+            ),
+
+            required=False,
+
+            default=list,
+        )
+    )
+
+    max_depth = (
+        serializers.IntegerField(
+            required=False,
+            default=8,
+            min_value=1,
+            max_value=20,
+        )
+    )
+
+    max_paths = (
+        serializers.IntegerField(
+            required=False,
+            default=1000,
+            min_value=1,
+            max_value=5000,
+        )
+    )

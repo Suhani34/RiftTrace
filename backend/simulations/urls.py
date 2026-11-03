@@ -8,6 +8,7 @@ from .views import (
     SecurityControlSimulationView,
     SecurityControlRankingView,
     IdentityPropagationView,
+    PathIntelligenceView,
 )
 
 
@@ -50,6 +51,11 @@ urlpatterns = [
         "identity-propagation/",
         IdentityPropagationView.as_view(),
         name="identity-propagation",
+    ),
+    path(
+        "path-intelligence/",
+        PathIntelligenceView.as_view(),
+        name="path-intelligence",
     ),
 ]
 

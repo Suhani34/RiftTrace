@@ -1,0 +1,8 @@
+{
+  "organization": 5,
+  "start_asset": 14,
+  "start_privilege": "LOW",
+  "target_asset_ids": [],
+  "max_depth": 8,
+  "max_paths": 1000
+}

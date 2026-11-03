@@ -3195,3 +3195,43 @@ span {
     width: 100%;
   }
 }
+
+.attack-path-card {
+  border: 1px solid
+    var(--border-color, #d9d9d9);
+
+  border-radius: 10px;
+
+  padding: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.attack-path-flow {
+  margin-top: 0.75rem;
+
+  margin-bottom: 0.75rem;
+
+  overflow-x: auto;
+
+  white-space: nowrap;
+
+  font-family: monospace;
+}
+
+.table-wrap {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+.warning-box {
+  margin: 1rem 0;
+
+  padding: 1rem;
+
+  border: 1px solid
+    currentColor;
+
+  border-radius: 8px;
+}

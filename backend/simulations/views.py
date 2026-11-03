@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.shortcuts import get_object_or_404
 from assets.models import (
     Asset,
     Relationship,
@@ -9,6 +9,17 @@ from assets.models import (
 from assets.serializers import (
     AssetSerializer,
     RelationshipSerializer,
+)
+from simulation_engine.path_intelligence import (
+    analyze_attack_paths,
+)
+
+from .path_intelligence_adapter import (
+    load_path_intelligence_context,
+)
+
+from .serializers import (
+    PathIntelligenceRequestSerializer,
 )
 from identities.models import (
     CredentialExposure,
@@ -50,7 +61,7 @@ from security.serializers import (
     SecurityControlSerializer,
     VulnerabilitySerializer,
 )
-
+from organizations.models import Organization
 from simulation_engine.counterfactual import (
     analyze_counterfactual,
 )
@@ -2606,4 +2617,127 @@ class IdentityPropagationView(
             },
 
             status=status.HTTP_200_OK,
+        )
+
+class PathIntelligenceView(
+    APIView
+):
+    def post(
+        self,
+        request,
+    ):
+        serializer = (
+            PathIntelligenceRequestSerializer(
+                data=request.data
+            )
+        )
+
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+
+        data = (
+            serializer.validated_data
+        )
+
+
+        organization_id = (
+            data[
+                "organization"
+            ]
+        )
+
+
+        start_asset_id = (
+            data[
+                "start_asset"
+            ]
+        )
+
+
+        organization = (
+            get_object_or_404(
+                Organization,
+                pk=organization_id,
+            )
+        )
+
+
+        start_asset = (
+            get_object_or_404(
+                Asset,
+                pk=start_asset_id,
+                organization=organization,
+            )
+        )
+
+
+        (
+            transitions,
+            target_metadata,
+	    effective_start_privilege,
+        ) = (
+            load_path_intelligence_context(
+                organization=organization,
+
+                start_asset=(
+                    start_asset
+                ),
+
+                start_privilege=(
+                    data[
+                        "start_privilege"
+                    ]
+                ),
+            )
+        )
+
+
+        result = (
+            analyze_attack_paths(
+                start_asset_id=(
+                    start_asset.id
+                ),
+
+                start_asset_name=(
+                    start_asset.name
+                ),
+
+                start_privilege=(
+  		    effective_start_privilege
+		),
+
+                transitions=(
+                    transitions
+                ),
+
+                target_metadata=(
+                    target_metadata
+                ),
+
+                target_asset_ids=(
+                    data[
+                        "target_asset_ids"
+                    ]
+                ),
+
+                max_depth=(
+                    data[
+                        "max_depth"
+                    ]
+                ),
+
+                max_paths=(
+                    data[
+                        "max_paths"
+                    ]
+                ),
+            )
+        )
+
+
+        return Response(
+            result
         )
