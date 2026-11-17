@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.test import APITestCase
+from accounts.testing import AuthenticatedAPITestCase
 
 from benchmarking.models import (
     BenchmarkResult,
@@ -7,7 +7,7 @@ from benchmarking.models import (
 
 
 class BenchmarkingApiTests(
-    APITestCase
+    AuthenticatedAPITestCase
 ):
     def test_empty_result_list(
         self,

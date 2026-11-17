@@ -6,13 +6,13 @@ from django.urls import reverse
 
 from rest_framework import status
 
-from rest_framework.test import (
-    APITestCase,
+from accounts.testing import (
+    AuthenticatedAPITestCase,
 )
 
 
 class AttackMappingAPITests(
-    APITestCase
+    AuthenticatedAPITestCase
 ):
     @classmethod
     def setUpTestData(cls):

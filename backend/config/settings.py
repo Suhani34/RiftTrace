@@ -37,22 +37,62 @@ DEBUG = (
     == "true"
 )
 
-ALLOWED_HOSTS = [
-    host.strip()
+def env_list(
+    name,
+    default="",
+):
+    value = os.getenv(
+        name,
+        default,
+    )
 
-    for host
-    in os.getenv(
-        "DJANGO_ALLOWED_HOSTS",
+    return [
+        item.strip()
 
-        (
-            "localhost,"
-            "127.0.0.1,"
-            "backend"
-        ),
-    ).split(",")
+        for item
+        in value.split(",")
 
-    if host.strip()
-]
+        if item.strip()
+    ]
+
+
+ALLOWED_HOSTS = env_list(
+    "DJANGO_ALLOWED_HOSTS",
+    (
+        "127.0.0.1,"
+        "localhost"
+    ),
+)
+
+SESSION_COOKIE_HTTPONLY = True
+
+SESSION_COOKIE_SAMESITE = (
+    "Lax"
+)
+
+CSRF_COOKIE_SAMESITE = (
+    "Lax"
+)
+
+CSRF_COOKIE_HTTPONLY = False
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+
+    CSRF_COOKIE_SECURE = True
+
+    SECURE_CONTENT_TYPE_NOSNIFF = (
+        True
+    )
+
+    X_FRAME_OPTIONS = (
+        "DENY"
+    )
+
+    SECURE_REFERRER_POLICY = (
+        "same-origin"
+    )
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -72,6 +112,7 @@ INSTALLED_APPS = [
     'benchmarking',
     'reporting',
     'attack_mapping',
+    'accounts',
     'organizations.apps.OrganizationsConfig',
     'security.apps.SecurityConfig',
     'business.apps.BusinessConfig',
@@ -155,16 +196,39 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation."
+            "UserAttributeSimilarityValidator"
+        ),
     },
+
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation."
+            "MinimumLengthValidator"
+        ),
+
+        "OPTIONS": {
+            "min_length": 12,
+        },
     },
+
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation."
+            "CommonPasswordValidator"
+        ),
     },
+
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation."
+            "NumericPasswordValidator"
+        ),
     },
 ]
 
@@ -207,3 +271,28 @@ CORS_ALLOWED_ORIGINS = [
 
     if origin.strip()
 ]
+
+REST_FRAMEWORK = {
+
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        (
+            "rest_framework."
+            "authentication."
+            "SessionAuthentication"
+        ),
+    ],
+
+    "DEFAULT_PERMISSION_CLASSES": [
+        (
+            "rest_framework."
+            "permissions."
+            "IsAuthenticated"
+        ),
+    ],
+
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "10/min",
+    },
+}
+
+

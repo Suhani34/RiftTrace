@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 from rest_framework import status
-from rest_framework.test import APITestCase
+from accounts.testing import AuthenticatedAPITestCase
 
 from assets.models import Asset
 from organizations.models import Organization
@@ -14,7 +14,7 @@ from identities.models import (
 
 
 class IdentityPropagationAPITests(
-    APITestCase
+    AuthenticatedAPITestCase
 ):
     def setUp(self):
         self.organization = (

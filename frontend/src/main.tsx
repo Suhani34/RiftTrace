@@ -1,18 +1,35 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import {
+  StrictMode,
+} from "react";
+
+import {
+  createRoot,
+} from "react-dom/client";
+
+import {
+  BrowserRouter,
+} from "react-router";
+
+import {
+  AuthProvider,
+} from "./auth/AuthProvider";
 
 import App from "./App.tsx";
+
 import "@xyflow/react/dist/style.css";
 import "./index.css";
 
 
 createRoot(
-  document.getElementById("root")!,
+  document.getElementById(
+    "root",
+  )!,
 ).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

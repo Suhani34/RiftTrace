@@ -114,4 +114,8 @@ urlpatterns = [
         "reporting/",
         include("reporting.urls"),
     ),
+    path(
+        "auth/",
+        include("accounts.urls"),
+    ),
 ]

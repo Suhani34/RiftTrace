@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from accounts.testing import AuthenticatedAPITestCase
 from organizations.models import Organization
 
 from .models import (
@@ -102,7 +102,7 @@ class AssetAndRelationshipModelTests(TestCase):
                 ),
             )
 
-class AssetAPITests(APITestCase):
+class AssetAPITests(AuthenticatedAPITestCase):
     def setUp(self):
         self.organization = Organization.objects.create(
             name="DemoCorp"
@@ -249,7 +249,7 @@ class AssetAPITests(APITestCase):
             status.HTTP_400_BAD_REQUEST,
         )
 
-class RelationshipAPITests(APITestCase):
+class RelationshipAPITests(AuthenticatedAPITestCase):
     def setUp(self):
         self.organization = Organization.objects.create(
             name="DemoCorp"

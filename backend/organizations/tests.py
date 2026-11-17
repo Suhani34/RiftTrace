@@ -1,6 +1,6 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from accounts.testing import AuthenticatedAPITestCase
 
 from .models import Organization
 from assets.models import (
@@ -9,7 +9,7 @@ from assets.models import (
     Relationship,
 )
 
-class OrganizationModelTests(APITestCase):
+class OrganizationModelTests(AuthenticatedAPITestCase):
     def test_organization_string_representation(self):
         organization = Organization.objects.create(
             name="DemoCorp"
@@ -21,7 +21,7 @@ class OrganizationModelTests(APITestCase):
         )
 
 
-class OrganizationAPITests(APITestCase):
+class OrganizationAPITests(AuthenticatedAPITestCase):
     def test_list_organizations(self):
         Organization.objects.create(
             name="DemoCorp"
@@ -87,7 +87,7 @@ class OrganizationAPITests(APITestCase):
         )
 
 class OrganizationTopologyAPITests(
-    APITestCase
+    AuthenticatedAPITestCase
 ):
     def test_topology_returns_nodes_and_edges(
         self,

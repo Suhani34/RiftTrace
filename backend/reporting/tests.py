@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.test import APITestCase
+from accounts.testing import AuthenticatedAPITestCase
 
 from organizations.models import (
     Organization,
@@ -12,7 +12,7 @@ from scenarios.models import (
 
 
 class ReportingApiTests(
-    APITestCase
+    AuthenticatedAPITestCase
 ):
     def setUp(
         self,
