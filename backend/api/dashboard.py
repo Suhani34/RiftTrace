@@ -9,7 +9,9 @@ from rest_framework.response import (
 from rest_framework.views import (
     APIView,
 )
-
+from rest_framework.exceptions import (
+    ValidationError,
+)
 from assets.models import (
     Asset,
     NetworkZone,
@@ -42,22 +44,15 @@ class DashboardSummaryView(APIView):
                 "organization"
             )
         )
-
-
         if not organization_id:
-            return Response(
-                {
-                    "detail": (
-                        "organization query "
-                        "parameter is required."
-                    )
-                },
-
-                status=(
-                    status
-                    .HTTP_400_BAD_REQUEST
-                ),
-            )
+          raise ValidationError(
+            {
+   	      "detail": (
+                "organization query "
+	        "parameter is required."
+              )
+           }
+        )
 
 
         organization = (

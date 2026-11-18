@@ -272,6 +272,14 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = (
+    5 * 1024 * 1024
+)
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = (
+    5 * 1024 * 1024
+)
+
 REST_FRAMEWORK = {
 
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -293,6 +301,10 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "login": "10/min",
     },
+    "EXCEPTION_HANDLER": (
+        "api.exceptions."
+        "rifttrace_exception_handler"
+    ),
 }
 
 

@@ -100,49 +100,52 @@ class BusinessProcessDependencySerializer(
             "created_at",
             "updated_at",
         ]
+    def validate(
+        self,
+        attrs,
+    ):
+        attrs = super().validate(
+            attrs
+        )
 
-    def validate(self, attrs):
-        business_process = (
-            attrs.get(
-                "business_process"
-            )
-            or getattr(
+        business_process = attrs.get(
+            "business_process",
+            getattr(
                 self.instance,
                 "business_process",
                 None,
-            )
+            ),
         )
 
-        asset = (
-            attrs.get("asset")
-            or getattr(
+        asset = attrs.get(
+            "asset",
+
+            getattr(
                 self.instance,
                 "asset",
                 None,
-            )
+            ),
         )
 
         if (
-            business_process
-            and asset
+            business_process is not None
+            and asset is not None
             and (
                 business_process
                 .organization_id
-                !=
-                asset.organization_id
+                != asset.organization_id
             )
         ):
-            raise (
-                serializers.ValidationError(
-                    {
-                        "asset": (
-                            "The asset must "
-                            "belong to the same "
-                            "organization as the "
-                            "business process."
-                        )
-                    }
-                )
+            raise serializers.ValidationError(
+                {
+                    "asset": (
+                        "Asset and business "
+                        "process must belong "
+                        "to the same "
+                        "organization."
+                    )
+                }
             )
+
 
         return attrs
