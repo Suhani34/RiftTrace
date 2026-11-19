@@ -19,21 +19,27 @@ echo "======================================"
 echo
 
 
-echo "[1/3] Backend quality"
+echo "[1/4] Backend quality"
 
 "$ROOT_DIR/scripts/backend_quality_gate.sh"
 
 
 echo
-echo "[2/3] Simulation quality"
+echo "[2/4] Simulation quality"
 
 "$ROOT_DIR/scripts/simulation_quality_gate.sh"
 
 
 echo
-echo "[3/3] Frontend quality"
+echo "[3/4] Frontend quality"
 
 "$ROOT_DIR/scripts/frontend_quality_gate.sh"
+
+
+echo
+echo "[4/4] Deployment quality"
+
+"$ROOT_DIR/scripts/deployment_quality_gate.sh"
 
 
 echo

@@ -104,6 +104,9 @@ jobs:
         run: |
           ./scripts/ci_backend.sh
 
+      - name: Validate production deployment
+        run: |
+          ./scripts/deployment_quality_gate.sh
 
   frontend:
     name: Frontend quality

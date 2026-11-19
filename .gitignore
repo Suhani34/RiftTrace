@@ -23,3 +23,5 @@ backend/.coverage
 backend/coverage.xml
 backend/htmlcov/
 frontend/coverage/
+# Production environment secrets
+.env.prod
