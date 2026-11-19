@@ -18,3 +18,8 @@ dist/
 
 # Runtime RiftTrace exports
 exports/
+# Test and coverage artifacts
+backend/.coverage
+backend/coverage.xml
+backend/htmlcov/
+frontend/coverage/

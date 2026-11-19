@@ -25,7 +25,7 @@ echo
 cd "$FRONTEND_DIR"
 
 
-echo "[1/5] Direct backend URL check"
+echo "[1/7] Direct backend URL check"
 
 if grep -R -n \
     "http://127.0.0.1:8000" \
@@ -40,7 +40,7 @@ fi
 
 
 echo
-echo "[2/5] Router consistency"
+echo "[2/7] Router consistency"
 
 if grep -R -n \
     "react-router-dom" \
@@ -55,7 +55,7 @@ fi
 
 
 echo
-echo "[3/5] Editor temporary files"
+echo "[3/7] Editor temporary files"
 
 TEMP_FILES="$(
     find src \
@@ -79,13 +79,34 @@ fi
 
 
 echo
-echo "[4/5] ESLint"
+echo "[4/7] Focused or skipped tests"
+
+if grep -R -nE \
+    '\.(only|skip)\(' \
+    src \
+    --include="*.test.ts" \
+    --include="*.test.tsx"
+then
+    echo
+    echo "Focused or skipped tests found."
+    exit 1
+fi
+
+
+echo
+echo "[5/7] Frontend tests"
+
+npm test
+
+
+echo
+echo "[6/7] ESLint"
 
 npm run lint
 
 
 echo
-echo "[5/5] Production build"
+echo "[7/7] Production build"
 
 npm run build
 
