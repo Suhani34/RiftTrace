@@ -1,10 +1,14 @@
 import {
   Navigate,
+  useLocation,
 } from "react-router";
 
 import type {
   ReactNode,
 } from "react";
+
+import PageState
+  from "../components/PageState";
 
 import {
   useAuth,
@@ -25,11 +29,23 @@ export function ProtectedRoute({
   } = useAuth();
 
 
+  const location =
+    useLocation();
+
+
   if (loading) {
     return (
-      <div>
-        Loading RiftTrace...
-      </div>
+      <main
+        className="auth-loading-page"
+      >
+        <PageState
+          kind="loading"
+          title="Loading RiftTrace"
+          message={
+            "Checking your authenticated session."
+          }
+        />
+      </main>
     );
   }
 
@@ -39,6 +55,11 @@ export function ProtectedRoute({
       <Navigate
         to="/login"
         replace
+        state={{
+          from:
+            location.pathname
+            + location.search,
+        }}
       />
     );
   }

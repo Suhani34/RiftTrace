@@ -8,11 +8,18 @@ import type {
 
 import {
   Navigate,
+  useLocation,
+  useNavigate,
 } from "react-router";
 
 import {
   useAuth,
 } from "../auth/authContext";
+
+
+interface LoginLocationState {
+  from?: string;
+}
 
 
 export default function LoginPage() {
@@ -21,6 +28,31 @@ export default function LoginPage() {
     loading,
     login,
   } = useAuth();
+
+
+  const location =
+    useLocation();
+
+  const navigate =
+    useNavigate();
+
+
+  const state = location.state as LoginLocationState | null;
+
+
+  const requestedPath =
+    state?.from;
+
+
+  const destination =
+    (
+      requestedPath
+      && requestedPath.startsWith(
+        "/"
+      )
+    )
+      ? requestedPath
+      : "/";
 
 
   const [
@@ -49,29 +81,13 @@ export default function LoginPage() {
   ] = useState(false);
 
 
-  if (loading) {
-    return (
-      <main
-        style={{
-          maxWidth: "480px",
-          margin: "80px auto",
-          padding: "24px",
-        }}
-      >
-        <section className="panel">
-          <p>
-            Loading RiftTrace...
-          </p>
-        </section>
-      </main>
-    );
-  }
-
-
-  if (user) {
+  if (
+    !loading
+    && user
+  ) {
     return (
       <Navigate
-        to="/"
+        to={destination}
         replace
       />
     );
@@ -79,9 +95,16 @@ export default function LoginPage() {
 
 
   async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
+
+
+    if (submitting) {
+      return;
+    }
+
 
     setError(null);
     setSubmitting(true);
@@ -89,12 +112,24 @@ export default function LoginPage() {
 
     try {
       await login(
-        username,
+        username.trim(),
         password,
+      );
+
+
+      navigate(
+        destination,
+        {
+          replace: true,
+        },
       );
     } catch {
       setError(
-        "Unable to sign in. Check your username and password.",
+        (
+          "Unable to sign in. "
+          + "Check your username "
+          + "and password."
+        ),
       );
     } finally {
       setSubmitting(false);
@@ -104,41 +139,47 @@ export default function LoginPage() {
 
   return (
     <main
-      style={{
-        maxWidth: "480px",
-        margin: "80px auto",
-        padding: "24px",
-      }}
+      className="login-page"
     >
-      <section className="panel">
-        <h1>
-          RiftTrace
-        </h1>
+      <section
+        className={[
+          "panel",
+          "login-card",
+        ].join(" ")}
+      >
+        <header
+          className="login-card__header"
+        >
+          <h1>
+            RiftTrace
+          </h1>
 
-        <p>
-          Sign in to continue.
-        </p>
+          <p>
+            Sign in to continue to
+            your cyber-risk environment.
+          </p>
+        </header>
 
 
-        {error && (
-          <div
-            role="alert"
-            style={{
-              marginBottom: "16px",
-            }}
-          >
-            {error}
-          </div>
-        )}
+        {
+          error
+          && (
+            <p
+              className="form-error"
+              role="alert"
+              aria-live="assertive"
+            >
+              {error}
+            </p>
+          )
+        }
 
 
         <form
           onSubmit={handleSubmit}
         >
           <div
-            style={{
-              marginBottom: "16px",
-            }}
+            className="form-field"
           >
             <label
               htmlFor="username"
@@ -152,26 +193,24 @@ export default function LoginPage() {
               type="text"
               autoComplete="username"
               value={username}
-              onChange={(event) => {
-                setUsername(
-                  event.target.value
-                );
-              }}
+              onChange={
+                (
+                  event
+                ) => {
+                  setUsername(
+                    event.target.value
+                  );
+                }
+              }
               required
               disabled={submitting}
-              style={{
-                display: "block",
-                width: "100%",
-                marginTop: "6px",
-              }}
+              autoFocus
             />
           </div>
 
 
           <div
-            style={{
-              marginBottom: "20px",
-            }}
+            className="form-field"
           >
             <label
               htmlFor="password"
@@ -183,20 +222,21 @@ export default function LoginPage() {
               id="password"
               name="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete={
+                "current-password"
+              }
               value={password}
-              onChange={(event) => {
-                setPassword(
-                  event.target.value
-                );
-              }}
+              onChange={
+                (
+                  event
+                ) => {
+                  setPassword(
+                    event.target.value
+                  );
+                }
+              }
               required
               disabled={submitting}
-              style={{
-                display: "block",
-                width: "100%",
-                marginTop: "6px",
-              }}
             />
           </div>
 

@@ -14,6 +14,10 @@ import {
   AuthProvider,
 } from "./auth/AuthProvider";
 
+import {
+  AppErrorBoundary,
+} from "./components/AppErrorBoundary";
+
 import App from "./App.tsx";
 
 import "@xyflow/react/dist/style.css";
@@ -22,14 +26,16 @@ import "./index.css";
 
 createRoot(
   document.getElementById(
-    "root",
-  )!,
+    "root"
+  )!
 ).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </AppErrorBoundary>
   </StrictMode>,
 );

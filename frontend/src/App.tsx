@@ -7,7 +7,14 @@ import {
   ProtectedRoute,
 } from "./auth/ProtectedRoute";
 
-import Layout from "./components/Layout";
+import Layout
+  from "./components/Layout";
+
+import PageState
+  from "./components/PageState";
+
+import SessionControls
+  from "./components/SessionControls";
 
 import AssetsPage
   from "./pages/AssetsPage";
@@ -78,16 +85,27 @@ import VulnerabilitiesPage
 
 function NotFoundPage() {
   return (
-    <section className="panel">
-      <h2>
-        Page not found
-      </h2>
+    <PageState
+      kind="empty"
+      title="Page not found"
+      message={
+        (
+          "The requested RiftTrace "
+          + "page does not exist."
+        )
+      }
+    />
+  );
+}
 
-      <p>
-        The requested RiftTrace page
-        does not exist.
-      </p>
-    </section>
+
+function ProtectedApplication() {
+  return (
+    <ProtectedRoute>
+      <SessionControls />
+
+      <Layout />
+    </ProtectedRoute>
   );
 }
 
@@ -105,9 +123,7 @@ export default function App() {
 
       <Route
         element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
+          <ProtectedApplication />
         }
       >
         <Route
