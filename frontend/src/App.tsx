@@ -3,44 +3,85 @@ import {
   Routes,
 } from "react-router";
 
+import {
+  ProtectedRoute,
+} from "./auth/ProtectedRoute";
+
 import Layout from "./components/Layout";
-import BenchmarkingPage from "./pages/BenchmarkingPage";
-import AssetsPage from "./pages/AssetsPage";
-import DashboardPage from "./pages/DashboardPage";
-import OrganizationsPage from "./pages/OrganizationsPage";
-import RelationshipsPage from "./pages/RelationshipsPage";
-import TopologyPage from "./pages/TopologyPage";
-import NetworkZonesPage from "./pages/NetworkZonesPage";
-import EvaluationPage from "./pages/EvaluationPage";
-import ScenarioHistoryPage from "./pages/ScenarioHistoryPage";
-import ReportsPage from "./pages/ReportsPage";
-import PathIntelligencePage
-  from "./pages/PathIntelligencePage";
-import IdentityGraphPage
-  from "./pages/IdentityGraphPage";
+
+import AssetsPage
+  from "./pages/AssetsPage";
+
 import AttackMappingPage
   from "./pages/AttackMappingPage";
-import IdentityPropagationPage
-  from "./pages/IdentityPropagationPage";
-import RemediationRankingPage
-  from "./pages/RemediationRankingPage";
-import VulnerabilitiesPage
-  from "./pages/VulnerabilitiesPage";
-import IngestionPage
-  from "./pages/IngestionPage";
+
+import BenchmarkingPage
+  from "./pages/BenchmarkingPage";
+
 import BusinessProcessesPage
   from "./pages/BusinessProcessesPage";
-import CounterfactualPage
-  from "./pages/CounterfactualPage";
-import SecurityControlsPage
-  from "./pages/SecurityControlsPage";
+
 import ControlSimulationPage
   from "./pages/ControlSimulationPage";
+
+import CounterfactualPage
+  from "./pages/CounterfactualPage";
+
+import DashboardPage
+  from "./pages/DashboardPage";
+
+import EvaluationPage
+  from "./pages/EvaluationPage";
+
+import IdentityGraphPage
+  from "./pages/IdentityGraphPage";
+
+import IdentityPropagationPage
+  from "./pages/IdentityPropagationPage";
+
+import IngestionPage
+  from "./pages/IngestionPage";
+
+import LoginPage
+  from "./pages/LoginPage";
+
+import NetworkZonesPage
+  from "./pages/NetworkZonesPage";
+
+import OrganizationsPage
+  from "./pages/OrganizationsPage";
+
+import PathIntelligencePage
+  from "./pages/PathIntelligencePage";
+
+import RelationshipsPage
+  from "./pages/RelationshipsPage";
+
+import RemediationRankingPage
+  from "./pages/RemediationRankingPage";
+
+import ReportsPage
+  from "./pages/ReportsPage";
+
+import ScenarioHistoryPage
+  from "./pages/ScenarioHistoryPage";
+
+import SecurityControlsPage
+  from "./pages/SecurityControlsPage";
+
+import TopologyPage
+  from "./pages/TopologyPage";
+
+import VulnerabilitiesPage
+  from "./pages/VulnerabilitiesPage";
+
 
 function NotFoundPage() {
   return (
     <section className="panel">
-      <h2>Page not found</h2>
+      <h2>
+        Page not found
+      </h2>
 
       <p>
         The requested RiftTrace page
@@ -54,104 +95,132 @@ function NotFoundPage() {
 export default function App() {
   return (
     <Routes>
-      <Route element={<Layout />}>
+      <Route
+        path="login"
+        element={
+          <LoginPage />
+        }
+      />
+
+
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route
           index
-          element={<DashboardPage />}
+          element={
+            <DashboardPage />
+          }
         />
 
         <Route
           path="organizations"
-          element={<OrganizationsPage />}
+          element={
+            <OrganizationsPage />
+          }
         />
 
-	<Route
+        <Route
           path="zones"
-          element={<NetworkZonesPage />}
+          element={
+            <NetworkZonesPage />
+          }
         />
 
         <Route
           path="assets"
-          element={<AssetsPage />}
+          element={
+            <AssetsPage />
+          }
         />
-	<Route
-	  path="identity-graph"
-	  element={
-	    <IdentityGraphPage />
-	  }
-	/>
 
-	<Route
-	  path="identity-propagation"
-	  element={
-	    <IdentityPropagationPage />
-	  }
-	/>
-	<Route
-	  path="remediation-ranking"
-	  element={
-	    <RemediationRankingPage />
-	  }
-	/>
+        <Route
+          path="identity-graph"
+          element={
+            <IdentityGraphPage />
+          }
+        />
+
+        <Route
+          path="identity-propagation"
+          element={
+            <IdentityPropagationPage />
+          }
+        />
+
+        <Route
+          path="remediation-ranking"
+          element={
+            <RemediationRankingPage />
+          }
+        />
 
         <Route
           path="relationships"
-          element={<RelationshipsPage />}
+          element={
+            <RelationshipsPage />
+          }
         />
 
-	<Route
-	  path="ingestion"
-	  element={
-	    <IngestionPage />
-	  }
-	/>
+        <Route
+          path="ingestion"
+          element={
+            <IngestionPage />
+          }
+        />
 
-	<Route
-	  path="attack-mapping"
-	  element={
-	    <AttackMappingPage />
-	  }
-	/>
+        <Route
+          path="attack-mapping"
+          element={
+            <AttackMappingPage />
+          }
+        />
 
-	<Route
-	  path="scenario-history"
-	  element={
-	    <ScenarioHistoryPage />
-	  }
-	/>
+        <Route
+          path="scenario-history"
+          element={
+            <ScenarioHistoryPage />
+          }
+        />
 
-	<Route
-	  path="evaluation"
-	  element={
-	    <EvaluationPage />
-	  }
-	/>
+        <Route
+          path="evaluation"
+          element={
+            <EvaluationPage />
+          }
+        />
 
-	<Route
-	  path="benchmarking"
-	  element={
-	    <BenchmarkingPage />
-	  }
-	/>
+        <Route
+          path="benchmarking"
+          element={
+            <BenchmarkingPage />
+          }
+        />
 
-	<Route
-	  path="reports"
-	  element={
-	    <ReportsPage />
-	  }
-	/>
+        <Route
+          path="reports"
+          element={
+            <ReportsPage />
+          }
+        />
 
-	<Route
-	  path="vulnerabilities"
-	  element={
-	    <VulnerabilitiesPage />
-	  }
-	/>
+        <Route
+          path="vulnerabilities"
+          element={
+            <VulnerabilitiesPage />
+          }
+        />
 
-	<Route
-	  path="topology"
-	  element={<TopologyPage />}
-	/>
+        <Route
+          path="topology"
+          element={
+            <TopologyPage />
+          }
+        />
 
         <Route
           path="business-processes"
@@ -160,40 +229,39 @@ export default function App() {
           }
         />
 
+        <Route
+          path="counterfactual"
+          element={
+            <CounterfactualPage />
+          }
+        />
 
-	<Route
-	  path="counterfactual"
-	  element={
-	    <CounterfactualPage />
-	  }
-	/>
+        <Route
+          path="path-intelligence"
+          element={
+            <PathIntelligencePage />
+          }
+        />
 
-	<Route
-	  path="path-intelligence"
-	  element={
-	    <PathIntelligencePage />
-	  }
-	/>
+        <Route
+          path="security-controls"
+          element={
+            <SecurityControlsPage />
+          }
+        />
 
-	<Route
-	  path="security-controls"
-
-	  element={
-	    <SecurityControlsPage />
-	  }
-	/>
-
-	<Route
-	  path="control-simulation"
-
-	  element={
-	    <ControlSimulationPage />
-	  }
-	/>
+        <Route
+          path="control-simulation"
+          element={
+            <ControlSimulationPage />
+          }
+        />
 
         <Route
           path="*"
-          element={<NotFoundPage />}
+          element={
+            <NotFoundPage />
+          }
         />
       </Route>
     </Routes>

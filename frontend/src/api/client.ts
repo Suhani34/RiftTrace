@@ -1,6 +1,7 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL
-  ?? "http://127.0.0.1:8000/api";
+  ?? "/api";
+
 
 export class ApiError extends Error {
   status: number;
@@ -29,6 +30,8 @@ export async function apiRequest<T>(
     {
       ...options,
 
+      credentials: "include",
+
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
@@ -54,7 +57,10 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     throw new ApiError(
-      `API request failed with status ${response.status}`,
+      (
+        "API request failed with "
+        + `status ${response.status}`
+      ),
       response.status,
       data,
     );

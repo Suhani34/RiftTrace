@@ -321,3 +321,59 @@ class PrioritizationAPITests(
 
             2,
         )
+    def test_same_ranking_request_is_deterministic(
+        self,
+    ):
+        payload = {
+            "organization":
+                self.organization.id,
+
+            "start_asset":
+                self.web.id,
+
+            "start_privilege":
+                "LOW",
+        }
+
+
+        first_response = (
+            self.client.post(
+                self.url,
+
+                payload,
+
+                format="json",
+            )
+        )
+
+
+        second_response = (
+            self.client.post(
+                self.url,
+
+                payload,
+
+                format="json",
+            )
+        )
+
+
+        self.assertEqual(
+            first_response.status_code,
+
+            status.HTTP_200_OK,
+        )
+
+
+        self.assertEqual(
+            second_response.status_code,
+
+            status.HTTP_200_OK,
+        )
+
+
+        self.assertEqual(
+            first_response.data,
+
+            second_response.data,
+        )
