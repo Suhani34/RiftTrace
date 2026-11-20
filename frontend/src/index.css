@@ -3416,3 +3416,406 @@ a:focus-visible {
     flex-wrap: wrap;
   }
 }
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  min-height: 64px;
+
+  padding: 8px 18px;
+
+  box-sizing: border-box;
+
+  background:
+    #0f172a;
+
+  color:
+    #ffffff;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.12
+    );
+}
+
+.app-topbar__identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.app-brand {
+  color: inherit;
+  text-decoration: none;
+
+  font-size: 1.15rem;
+  font-weight: 700;
+
+  letter-spacing: 0.02em;
+}
+
+.app-brand:hover {
+  text-decoration: none;
+}
+
+.menu-button {
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+
+  border-radius: 10px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+
+  color: inherit;
+
+  cursor: pointer;
+}
+
+.menu-button:hover {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.12
+    );
+}
+
+.menu-icon {
+  width: 22px;
+
+  display: grid;
+  gap: 5px;
+}
+
+.menu-icon span {
+  display: block;
+
+  height: 2px;
+
+  border-radius: 999px;
+
+  background:
+    currentColor;
+}
+
+.navigation-backdrop {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1000;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  border: 0;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.48
+    );
+
+  cursor: default;
+}
+
+.navigation-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  z-index: 1100;
+
+  width: min(
+    88vw,
+    340px
+  );
+
+  height: 100vh;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  padding: 18px;
+
+  background:
+    #0f172a;
+
+  color:
+    #ffffff;
+
+  box-shadow:
+    16px 0 40px
+    rgba(
+      0,
+      0,
+      0,
+      0.3
+    );
+}
+
+.navigation-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 22px;
+
+  padding-bottom: 16px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.14
+    );
+}
+
+.navigation-drawer__header strong {
+  font-size: 1.2rem;
+}
+
+.navigation-drawer__header p {
+  margin:
+    4px
+    0
+    0;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.65
+    );
+
+  font-size: 0.875rem;
+}
+
+.navigation-drawer__close {
+  min-width: 40px;
+  min-height: 40px;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+
+  border-radius: 10px;
+
+  background:
+    transparent;
+
+  color:
+    #ffffff;
+
+  font-size: 1.6rem;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.navigation-menu {
+  display: grid;
+  gap: 24px;
+}
+
+.navigation-group {
+  display: grid;
+  gap: 8px;
+}
+
+.navigation-group__title {
+  margin: 0;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.6
+    );
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+.navigation-group__list {
+  list-style: none;
+
+  display: grid;
+  gap: 4px;
+
+  padding: 0;
+  margin: 0;
+}
+
+.navigation-link {
+  display: block;
+
+  padding:
+    10px
+    12px;
+
+  border-radius: 9px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.82
+    );
+
+  text-decoration: none;
+
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.navigation-link:hover {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  color:
+    #ffffff;
+
+  text-decoration: none;
+}
+
+.navigation-link--active {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.14
+    );
+
+  color:
+    #ffffff;
+
+  font-weight: 700;
+}
+
+.app-content {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding:
+    24px;
+}
+
+.app-topbar .session-controls {
+  position: static;
+
+  margin: 0;
+  padding: 0;
+
+  background: transparent;
+}
+
+.app-topbar
+.session-controls__user {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.82
+    );
+}
+
+@media (
+  max-width: 700px
+) {
+  .app-topbar {
+    padding:
+      8px
+      12px;
+  }
+
+  .app-content {
+    padding:
+      16px;
+  }
+
+  .app-topbar
+  .session-controls__user {
+    display: none;
+  }
+
+  .app-topbar
+  .session-controls {
+    margin: 0;
+  }
+
+  .navigation-drawer {
+    width:
+      min(
+        92vw,
+        340px
+      );
+  }
+}

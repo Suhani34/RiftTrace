@@ -13,9 +13,6 @@ import Layout
 import PageState
   from "./components/PageState";
 
-import SessionControls
-  from "./components/SessionControls";
-
 import AssetsPage
   from "./pages/AssetsPage";
 
@@ -102,8 +99,6 @@ function NotFoundPage() {
 function ProtectedApplication() {
   return (
     <ProtectedRoute>
-      <SessionControls />
-
       <Layout />
     </ProtectedRoute>
   );

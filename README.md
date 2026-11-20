@@ -1,149 +1,146 @@
 # RiftTrace
 
-RiftTrace is a counterfactual cyber-risk simulation and
-business-impact prioritization platform.
+**Counterfactual Cyber Risk Simulation and Business Impact Prioritization Platform**
 
-It models an organization's technical environment,
-simulates potential compromise propagation under explicit
-security prerequisites, maps affected technical assets to
-business processes, compares hypothetical defensive changes,
-and ranks candidate security controls by modeled consequence
-reduction.
+RiftTrace is a cybersecurity modeling and simulation
+platform designed to answer a practical defensive
+question:
 
-## Core Question
+> If a particular asset is compromised, what could
+> become reachable, what business operations could
+> potentially be affected, and which defensive change
+> would reduce that impact most?
 
-If a particular asset is compromised:
+RiftTrace models an organization's technical
+environment as a graph containing assets,
+relationships, vulnerabilities, identities,
+business processes and security controls.
 
-1. What could become technically reachable?
-2. Which transitions satisfy modeled cybersecurity conditions?
-3. Which business processes depend on the affected assets?
-4. How would hypothetical defensive changes alter the result?
-5. Which candidate control reduces the most important modeled
-   consequences?
+It then performs deterministic simulations over
+that model to explore potential compromise
+propagation and business consequences.
 
-## Technology Stack
+---
 
-Backend:
-- Python
-- Django
-- Django REST Framework
-- PostgreSQL
-- NetworkX
+## Important Research Positioning
 
-Frontend:
-- React
-- TypeScript
-- Vite
-- React Flow
-- Recharts
+RiftTrace does **not** claim to predict the exact
+cyberattack that will occur in a real environment.
 
-Deployment:
-- Docker
-- Docker Compose
-- Gunicorn
-- Nginx
+Its results represent modeled possibilities based
+on the environment and assumptions supplied to the
+simulation.
 
-## Main Capabilities
+In particular:
 
-- Organization and asset modeling
-- Network-zone modeling
-- Directed asset relationships
-- Vulnerability modeling
-- Graph topology visualization
-- Topology reachability simulation
-- Security-aware propagation
-- Privilege escalation modeling
-- Authentication and MFA prerequisites
-- Business-process dependency modeling
-- Business-impact propagation
-- Counterfactual simulation
-- Security-control simulation
-- Business-aware remediation ranking
-- JSON environment ingestion
-- CSV environment ingestion
-- Pre-import validation and preview
-- Atomic environment imports
-- Repeatable/idempotent imports
-- Import history
-- Identity modeling
-- User/service-account/role representation
-- Modeled credential exposure
-- Identity-to-identity privilege relationships
-- Identity-to-asset access permissions
-- MFA-aware identity propagation
-- Credential-driven lateral movement analysis
+- connectivity does not automatically imply
+  exploitability
+- attack propagation depends on modeled security
+  conditions
+- MITRE ATT&CK techniques annotate modeled events
+  rather than create reachability
+- business impact is derived from modeled
+  dependencies
+- counterfactual results compare modeled states,
+  not guaranteed future outcomes
 
-## Simulation Semantics
+---
 
-RiftTrace does not predict exact attacker behavior.
+## Core Capabilities
 
-Its results represent potential consequences under the
-explicitly modeled topology, vulnerabilities, privileges,
-authentication requirements, security controls and
-business dependencies.
+### Environment Modeling
 
-## Saved Simulation Scenarios
+RiftTrace can model:
 
-RiftTrace supports reproducible simulation history.
+- organizations
+- network zones
+- applications
+- APIs
+- servers
+- databases
+- cloud services
+- network devices
+- relationships
+- vulnerabilities
+- identities
+- credentials
+- security controls
+- business processes
 
-A completed simulation can be saved as a scenario containing
-its simulation type and request payload. Each execution creates
-an immutable ScenarioRun containing the request used, complete
-result payload, normalized comparison metrics, status, and
-timestamp.
+Environment data can also be imported from JSON
+and CSV sources.
 
-Saved scenarios can later be rerun against the current modeled
-environment. Historical runs remain unchanged, allowing users
-to compare modeled before/after results after modifying security
-controls, vulnerabilities, relationships, identity access, or
-other modeled conditions.
+### Cyber-Risk Simulation
 
-The comparison represents differences between modeled scenarios
-and must not be interpreted as observed real-world attack behavior.
+RiftTrace supports:
+
+- topology reachability
+- security-aware attack propagation
+- privilege-aware propagation
+- authentication constraints
+- MFA constraints
+- vulnerability exploitation
+- identity propagation
+- credential exposure
+- business-impact analysis
+- counterfactual simulation
+- security-control simulation
+- remediation prioritization
+
+### Attack-Path Intelligence
+
+The platform can identify:
+
+- modeled attack paths
+- path relationships
+- shared nodes
+- shared relationships
+- potential chokepoints
+
+Path enumeration is bounded to prevent uncontrolled
+graph expansion.
+
+### MITRE ATT&CK Context
+
+Modeled security events can be annotated with
+relevant MITRE ATT&CK techniques.
+
+ATT&CK mappings provide threat-context information.
+They do not independently make an asset reachable.
+
+### Research Evaluation
+
+RiftTrace includes:
+
+- saved scenarios
+- scenario runs
+- before/after comparison
+- experiment evaluation
+- scalability benchmarking
+- reports
+- CSV exports
+
+---
 
 ## Architecture
 
-Django handles persistence, API validation and orchestration.
-
-The `simulation_engine` package contains the pure graph,
-propagation, business-impact, counterfactual, control and
-prioritization algorithms.
-
-External data
-    ↓
-Ingestion parser
-    ↓
-Normalized records
-    ↓
-Validation planner
-    ↓
-Atomic application
-    ↓
-RiftTrace model
-
-## Local Development
-
-Backend:
-
-```bash
-cd backend
-source ../.venv/bin/activate
-python manage.py migrate
-python manage.py runserver
-
-##MITRE ATT&CK Mapping
-
-RiftTrace includes a versioned ATT&CK annotation layer that
-maps modeled simulation events to applicable ATT&CK
-techniques through deterministic, explainable rules.
-
-Initial supported mappings include:
-
-T1190 — Exploit Public-Facing Application
-T1552 — Unsecured Credentials
-T1078 — Valid Accounts
-T1021 — Remote Services
-
-ATT&CK annotations describe modeled behavior and are not
-detections or evidence of observed malicious activity.
-ATT&CK source release: v20.0
+```text
+Browser
+   |
+   v
+React + TypeScript
+   |
+   v
+Nginx
+   |
+   v
+Django REST API
+   |
+   +--------------------+
+   |                    |
+   v                    v
+Simulation Engine    PostgreSQL
+   |
+   v
+Graph / Path /
+Impact Analysis

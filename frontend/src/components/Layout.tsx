@@ -1,112 +1,488 @@
 import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
   NavLink,
   Outlet,
 } from "react-router";
 
+import SessionControls
+  from "./SessionControls";
+
+
+interface NavigationItem {
+  label: string;
+
+  to: string;
+
+  end?: boolean;
+}
+
+
+interface NavigationGroup {
+  label: string;
+
+  items: NavigationItem[];
+}
+
+
+const navigationGroups:
+  NavigationGroup[] = [
+    {
+      label:
+        "Overview",
+
+      items: [
+        {
+          label:
+            "Dashboard",
+
+          to:
+            "/",
+
+          end:
+            true,
+        },
+      ],
+    },
+
+    {
+      label:
+        "Environment",
+
+      items: [
+        {
+          label:
+            "Organizations",
+
+          to:
+            "/organizations",
+        },
+
+        {
+          label:
+            "Network Zones",
+
+          to:
+            "/zones",
+        },
+
+        {
+          label:
+            "Assets",
+
+          to:
+            "/assets",
+        },
+
+        {
+          label:
+            "Relationships",
+
+          to:
+            "/relationships",
+        },
+
+        {
+          label:
+            "Topology",
+
+          to:
+            "/topology",
+        },
+
+        {
+          label:
+            "Environment Ingestion",
+
+          to:
+            "/ingestion",
+        },
+
+        {
+          label:
+            "Reports",
+
+          to:
+            "/reports",
+        },
+      ],
+    },
+
+    {
+      label:
+        "Risk & Simulation",
+
+      items: [
+        {
+          label:
+            "Vulnerabilities",
+
+          to:
+            "/vulnerabilities",
+        },
+
+        {
+          label:
+            "Business Processes",
+
+          to:
+            "/business-processes",
+        },
+
+        {
+          label:
+            "Counterfactual",
+
+          to:
+            "/counterfactual",
+        },
+
+        {
+          label:
+            "Security Controls",
+
+          to:
+            "/security-controls",
+        },
+
+        {
+          label:
+            "Control Simulation",
+
+          to:
+            "/control-simulation",
+        },
+
+        {
+          label:
+            "Remediation Ranking",
+
+          to:
+            "/remediation-ranking",
+        },
+
+        {
+          label:
+            "Path Intelligence",
+
+          to:
+            "/path-intelligence",
+        },
+      ],
+    },
+
+    {
+      label:
+        "Identity & Mapping",
+
+      items: [
+        {
+          label:
+            "Identity Graph",
+
+          to:
+            "/identity-graph",
+        },
+
+        {
+          label:
+            "Identity Propagation",
+
+          to:
+            "/identity-propagation",
+        },
+
+        {
+          label:
+            "ATT&CK Mapping",
+
+          to:
+            "/attack-mapping",
+        },
+      ],
+    },
+
+    {
+      label:
+        "Research & Validation",
+
+      items: [
+        {
+          label:
+            "Scenario History",
+
+          to:
+            "/scenario-history",
+        },
+
+        {
+          label:
+            "Evaluation",
+
+          to:
+            "/evaluation",
+        },
+
+        {
+          label:
+            "Benchmarking",
+
+          to:
+            "/benchmarking",
+        },
+      ],
+    },
+  ];
+
 
 export default function Layout() {
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div>
-          <h1>RiftTrace</h1>
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
 
-          <p>
-            Cyber Risk Simulation Platform
-          </p>
+  useEffect(
+    () => {
+      function handleKeyDown(
+        event: KeyboardEvent,
+      ) {
+        if (
+          event.key
+          === "Escape"
+        ) {
+          setMenuOpen(false);
+        }
+      }
+
+
+      window.addEventListener(
+        "keydown",
+        handleKeyDown,
+      );
+
+
+      return () => {
+        window.removeEventListener(
+          "keydown",
+          handleKeyDown,
+        );
+      };
+    },
+    [],
+  );
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+
+  return (
+    <div
+      className="app-shell"
+    >
+      <header
+        className="app-topbar"
+      >
+        <div
+          className="app-topbar__identity"
+        >
+          <button
+            type="button"
+            className="menu-button"
+            aria-label={
+              menuOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+            }
+            aria-expanded={
+              menuOpen
+            }
+            aria-controls={
+              "rifttrace-navigation"
+            }
+            onClick={
+              () => {
+                setMenuOpen(
+                  (current) =>
+                    !current
+                );
+              }
+            }
+          >
+            <span
+              className="menu-icon"
+              aria-hidden="true"
+            >
+              <span />
+
+              <span />
+
+              <span />
+            </span>
+          </button>
+
+
+          <NavLink
+            to="/"
+            className="app-brand"
+          >
+            RiftTrace
+          </NavLink>
         </div>
+
+
+        <SessionControls />
       </header>
 
-      <nav className="main-nav">
-        <NavLink to="/">
-          Dashboard
-        </NavLink>
 
-	<NavLink to="/ingestion">
-	  Environment Ingestion
-	</NavLink>
+      {
+        menuOpen
+        && (
+          <>
+            <button
+              type="button"
+              className="navigation-backdrop"
+              aria-label={
+                "Close navigation menu"
+              }
+              onClick={
+                closeMenu
+              }
+            />
 
-        <NavLink to="/organizations">
-          Organizations
-        </NavLink>
 
-        <NavLink to="/zones">
-          Network Zones
-        </NavLink>
+            <aside
+              id="rifttrace-navigation"
+              className="navigation-drawer"
+              aria-label={
+                "RiftTrace navigation"
+              }
+            >
+              <header
+                className="navigation-drawer__header"
+              >
+                <div>
+                  <strong>
+                    RiftTrace
+                  </strong>
 
-        <NavLink to="/assets">
-          Assets
-        </NavLink>
+                  <p>
+                    Navigation
+                  </p>
+                </div>
 
-        <NavLink to="/relationships">
-          Relationships
-        </NavLink>
 
-	<NavLink to="/vulnerabilities">
-	  Vulnerabilities
-	</NavLink>
+                <button
+                  type="button"
+                  className={
+                    "navigation-drawer__close"
+                  }
+                  aria-label={
+                    "Close navigation menu"
+                  }
+                  onClick={
+                    closeMenu
+                  }
+                >
+                  ×
+                </button>
+              </header>
 
-	<NavLink to="/security-controls">
-	  Security Controls
-	</NavLink>
 
-        <NavLink to="/topology">
-          Topology
-        </NavLink>
-	<NavLink to="/identity-graph">
-	  Identity Graph
-	</NavLink>
+              <nav
+                className="navigation-menu"
+                aria-label={
+                  "RiftTrace sections"
+                }
+              >
+                {
+                  navigationGroups.map(
+                    (
+                      group
+                    ) => (
+                      <section
+                        key={
+                          group.label
+                        }
+                        className={
+                          "navigation-group"
+                        }
+                      >
+                        <h2
+                          className={
+                            "navigation-group__title"
+                          }
+                        >
+                          {group.label}
+                        </h2>
 
-	<NavLink to="/attack-mapping">
-	  MITRE ATT&CK
-	</NavLink>
 
-	<NavLink to="/scenario-history">
-	  Scenario History
-	</NavLink>
+                        <ul
+                          className={
+                            "navigation-group__list"
+                          }
+                        >
+                          {
+                            group.items.map(
+                              (
+                                item
+                              ) => (
+                                <li
+                                  key={
+                                    item.to
+                                  }
+                                >
+                                  <NavLink
+                                    to={
+                                      item.to
+                                    }
+                                    end={
+                                      item.end
+                                    }
+                                    onClick={
+                                      closeMenu
+                                    }
+                                    className={
+                                      (
+                                        {
+                                          isActive,
+                                        },
+                                      ) => (
+                                        isActive
+                                          ? (
+                                            "navigation-link "
+                                            + "navigation-link--active"
+                                          )
+                                          : "navigation-link"
+                                      )
+                                    }
+                                  >
+                                    {
+                                      item.label
+                                    }
+                                  </NavLink>
+                                </li>
+                              ),
+                            )
+                          }
+                        </ul>
+                      </section>
+                    ),
+                  )
+                }
+              </nav>
+            </aside>
+          </>
+        )
+      }
 
-	<NavLink
-	  to="/evaluation">
-	  Research Evaluation
-	</NavLink>
 
-	<NavLink
-	  to="/benchmarking">
-	  Performance
-	</NavLink>
-
-	<NavLink
-	  to="/reports">
-	  Import / Export
-	</NavLink>
-
-	<NavLink to="/identity-propagation">
-	  Identity Propagation
-	</NavLink>
-
-        <NavLink to="/business-processes">
-          Business Processes
-        </NavLink>
-
-	<NavLink to="/path-intelligence">
-	  Attack Paths
-	</NavLink>
-
-	<NavLink to="/counterfactual">
-	  Counterfactual
-	</NavLink>
-
-	<NavLink to="/control-simulation">
-	  Control Simulation
-	</NavLink>
-
-	<NavLink to="/remediation-ranking">
-	  Remediation Ranking
-	</NavLink>
-
-      </nav>
-
-      <main className="page-container">
+      <main
+        className="app-content"
+      >
         <Outlet />
       </main>
     </div>
