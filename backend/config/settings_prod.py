@@ -46,27 +46,51 @@ CSRF_TRUSTED_ORIGINS = env_list(
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv(
-            "POSTGRES_DB",
-            "rifttrace",
-        ),
-        "USER": os.getenv(
-            "POSTGRES_USER",
-            "rifttrace",
-        ),
-        "PASSWORD": os.environ[
-            "POSTGRES_PASSWORD"
-        ],
-        "HOST": os.getenv(
-            "POSTGRES_HOST",
-            "db",
-        ),
-        "PORT": os.getenv(
-            "POSTGRES_PORT",
-            "5432",
-        ),
-        "CONN_MAX_AGE": 60,
+        "ENGINE":
+            "django.db.backends.postgresql",
+
+        "NAME":
+            os.getenv(
+                "POSTGRES_DB",
+                "rifttrace",
+            ),
+
+        "USER":
+            os.getenv(
+                "POSTGRES_USER",
+                "rifttrace",
+            ),
+
+        "PASSWORD":
+            os.environ[
+                "POSTGRES_PASSWORD"
+            ],
+
+        "HOST":
+            os.getenv(
+                "POSTGRES_HOST",
+                "db",
+            ),
+
+        "PORT":
+            os.getenv(
+                "POSTGRES_PORT",
+                "5432",
+            ),
+
+        "CONN_MAX_AGE":
+            env_int(
+                "POSTGRES_CONN_MAX_AGE",
+                60,
+            ),
+
+        "OPTIONS": {
+            "sslmode":
+                os.getenv(
+                    "POSTGRES_SSLMODE",
+                    "prefer",
+                ),
+        },
     },
 }
 
