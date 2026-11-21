@@ -6,7 +6,7 @@
       "destination": "https://rifttrace-backend.onrender.com/api/:path*"
     },
     {
-      "source": "/:path((?!api/).*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
