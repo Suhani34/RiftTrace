@@ -205,8 +205,16 @@ export default function EvaluationPage() {
           if (
             data.length > 0
           ) {
+            const preferred =
+              data.find(
+                (organization) =>
+                  organization.name
+                  === "Import Demo Corp",
+              )
+              ?? data[0];
+
             const firstId =
-              data[0].id;
+              preferred.id;
 
 
             setOrganizationId(

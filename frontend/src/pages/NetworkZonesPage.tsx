@@ -97,8 +97,16 @@ export default function NetworkZonesPage() {
           return;
         }
 
+        const preferred =
+          organizationData.find(
+            (organization) =>
+              organization.name
+              === "RiftTrace Labs",
+          )
+          ?? organizationData[0];
+
         const organizationId =
-          organizationData[0].id;
+          preferred.id;
 
         const zoneData =
           await listZones(

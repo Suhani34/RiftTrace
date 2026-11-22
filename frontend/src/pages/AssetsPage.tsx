@@ -189,15 +189,23 @@ export default function AssetsPage() {
         setOrganizations(orgData);
 
         if (orgData.length > 0) {
+          const preferred =
+            orgData.find(
+              (organization) =>
+                organization.name
+                === "RiftTrace Labs",
+            )
+            ?? orgData[0];
+
           const firstId =
-            String(orgData[0].id);
+            String(preferred.id);
 
           setSelectedOrganization(
             firstId,
           );
 
           await loadAssets(
-            orgData[0].id,
+            preferred.id,
           );
 
 	  const zoneData =

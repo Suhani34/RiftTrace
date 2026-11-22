@@ -132,25 +132,31 @@ export default function RelationshipsPage() {
   useEffect(() => {
     async function initialize() {
       try {
-        const [
-          orgData,
-          assetData,
-        ] = await Promise.all([
-          listOrganizations(),
-          listAssets(),
-        ]);
+        const orgData =
+          await listOrganizations();
 
-        setOrganizations(orgData);
-        setAllAssets(assetData);
+        setOrganizations(
+          orgData,
+        );
 
         if (orgData.length > 0) {
+          const preferred =
+            orgData.find(
+              (organization) =>
+                organization.name
+                === "RiftTrace Labs",
+            )
+            ?? orgData[0];
+
           setSelectedOrganization(
-            String(orgData[0].id),
+            String(
+              preferred.id,
+            ),
           );
         }
       } catch {
         setError(
-          "Unable to load relationship data.",
+          "Unable to load organizations.",
         );
       }
     }
@@ -159,29 +165,51 @@ export default function RelationshipsPage() {
   }, []);
 
 
-useEffect(() => {
-  async function load() {
-    if (!selectedOrganization) {
-      return;
-    }
+  useEffect(() => {
+    async function load() {
+      if (!selectedOrganization) {
+        setAllAssets([]);
+        setRelationships([]);
+        return;
+      }
 
-    try {
-      const data =
-        await listRelationships(
-          Number(selectedOrganization),
+      try {
+        const organizationId =
+          Number(
+            selectedOrganization,
+          );
+
+        const [
+          assetData,
+          relationshipData,
+        ] = await Promise.all([
+          listAssets(
+            organizationId,
+          ),
+
+          listRelationships(
+            organizationId,
+          ),
+        ]);
+
+        setAllAssets(
+          assetData,
         );
 
-      setRelationships(data);
-      setError("");
-    } catch {
-      setError(
-        "Unable to load relationships.",
-      );
-    }
-  }
+        setRelationships(
+          relationshipData,
+        );
 
-  void load();
-}, [selectedOrganization]);
+        setError("");
+      } catch {
+        setError(
+          "Unable to load relationship data.",
+        );
+      }
+    }
+
+    void load();
+  }, [selectedOrganization]);
 
 
   const availableAssets = useMemo(
